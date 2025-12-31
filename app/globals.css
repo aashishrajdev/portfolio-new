@@ -48,7 +48,7 @@
 }
 
 :root.dark {
-  --background: #222222;
+  --background: #1f1f1f;
   --foreground: #ffffff;
 }
 
@@ -151,6 +151,27 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
+}
+
+/* Text selection styles */
+::selection {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+::-moz-selection {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+}
+
+.dark ::selection {
+  background-color: #1d4ed8 !important;
+  color: #ffffff !important;
+}
+
+.dark ::-moz-selection {
+  background-color: #1d4ed8 !important;
+  color: #ffffff !important;
 }
 
 @layer base {

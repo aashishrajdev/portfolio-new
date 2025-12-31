@@ -8,6 +8,7 @@ import PageReveal from "./PageReveal";
 import { PreloaderProvider, usePreloader } from "../context/PreloaderContext";
 import Navbar from "./Navbar";
 import Controls from "./Controls";
+import ClickSpark from "./ClickSpark";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
   const { showPreloader, setShowPreloader } = usePreloader();
@@ -31,7 +32,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
   }, [showPreloader, isHome]);
 
   return (
-    <>
+    <ClickSpark sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
       <AnimatePresence mode="wait">
         {showPreloader && isHome && (
           <Preloader onFinish={() => setShowPreloader(false)} />
@@ -40,7 +41,7 @@ function InnerLayout({ children }: { children: React.ReactNode }) {
       <Navbar />
       <Controls />
       <PageReveal>{children}</PageReveal>
-    </>
+    </ClickSpark>
   );
 }
 
