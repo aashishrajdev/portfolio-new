@@ -2,15 +2,166 @@
 import Container from "../components/Container";
 import VariableProximity from "../components/VariableProximity";
 import ProfileCard from "../components/ProfileCard";
+import LogoLoop from "../components/LogoLoop";
 import { useRef, useState } from "react";
+import {
+  SiJavascript,
+  SiTypescript,
+  SiPython,
+  SiCplusplus,
+  SiHtml5,
+  SiCss3,
+  SiReact,
+  SiNextdotjs,
+  SiNodedotjs,
+  SiExpress,
+  SiTailwindcss,
+  SiStyledcomponents,
+  SiFramer,
+  SiGit,
+  SiDocker,
+  SiJenkins,
+  SiAmazonwebservices,
+  SiGooglecloud,
+  SiTerraform,
+  SiRedis,
+  SiMongodb,
+  SiPostgresql,
+  SiPrisma,
+  SiFirebase,
+  SiVercel,
+  SiLeaflet,
+} from "react-icons/si";
+import { FaJava } from "react-icons/fa";
+import { VscTerminalBash, VscAzure } from "react-icons/vsc";
+
+const techLogos = [
+  // Languages
+  {
+    node: <SiJavascript />,
+    title: "JavaScript",
+    href: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+  },
+  {
+    node: <SiTypescript />,
+    title: "TypeScript",
+    href: "https://www.typescriptlang.org",
+  },
+  { node: <SiPython />, title: "Python", href: "https://www.python.org" },
+  { node: <SiCplusplus />, title: "C++", href: "https://isocpp.org" },
+  { node: <FaJava />, title: "Java", href: "https://www.java.com" },
+  {
+    node: <SiHtml5 />,
+    title: "HTML",
+    href: "https://developer.mozilla.org/en-US/docs/Web/HTML",
+  },
+  {
+    node: <SiCss3 />,
+    title: "CSS",
+    href: "https://developer.mozilla.org/en-US/docs/Web/CSS",
+  },
+  {
+    node: <VscTerminalBash />,
+    title: "Shell/Bash",
+    href: "https://www.gnu.org/software/bash",
+  },
+  // Frameworks
+  { node: <SiReact />, title: "React.js", href: "https://react.dev" },
+  { node: <SiNextdotjs />, title: "Next.js", href: "https://nextjs.org" },
+  { node: <SiNodedotjs />, title: "Node.js", href: "https://nodejs.org" },
+  { node: <SiExpress />, title: "Express.js", href: "https://expressjs.com" },
+  {
+    node: <SiTailwindcss />,
+    title: "TailwindCSS",
+    href: "https://tailwindcss.com",
+  },
+  {
+    node: <SiStyledcomponents />,
+    title: "Styled-Components",
+    href: "https://styled-components.com",
+  },
+  {
+    node: <SiFramer />,
+    title: "Framer Motion",
+    href: "https://www.framer.com/motion",
+  },
+  // Tools & Platforms
+  { node: <SiGit />, title: "Git", href: "https://git-scm.com" },
+  { node: <SiDocker />, title: "Docker", href: "https://www.docker.com" },
+  { node: <SiJenkins />, title: "Jenkins", href: "https://www.jenkins.io" },
+  {
+    node: <SiAmazonwebservices />,
+    title: "AWS",
+    href: "https://aws.amazon.com",
+  },
+  { node: <SiMongodb />, title: "MongoDB", href: "https://www.mongodb.com" },
+  {
+    node: <SiPostgresql />,
+    title: "PostgreSQL",
+    href: "https://www.postgresql.org",
+  },
+  { node: <SiPrisma />, title: "Prisma", href: "https://www.prisma.io" },
+  {
+    node: <SiFirebase />,
+    title: "Firebase",
+    href: "https://firebase.google.com",
+  },
+  { node: <SiVercel />, title: "Vercel", href: "https://vercel.com" },
+  { node: <SiLeaflet />, title: "Leaflet.js", href: "https://leafletjs.com" },
+  {
+    node: <SiGooglecloud />,
+    title: "Google Cloud",
+    href: "https://cloud.google.com",
+  },
+  {
+    node: <VscAzure />,
+    title: "Azure",
+    href: "https://azure.microsoft.com",
+  },
+  {
+    node: <SiTerraform />,
+    title: "Terraform",
+    href: "https://www.terraform.io",
+  },
+  { node: <SiRedis />, title: "Redis", href: "https://redis.io" },
+];
 
 export default function About() {
   const containerRef = useRef(null);
   const [isGithubHovered, setIsGithubHovered] = useState(false);
 
   return (
-    <section className="max-h-screen py-32 md:py-40">
-      <Container className="max-w-6xl">
+    <section className="max-h-screen py-32 md:py-40 relative overflow-hidden">
+      {/* Desktop: Diagonal single line LogoLoop across screen */}
+      <div className="hidden md:block fixed inset-0 pointer-events-auto z-0 overflow-hidden">
+        <div
+          className="absolute text-foreground opacity-15 hover:opacity-30 transition-opacity duration-300"
+          style={{
+            width: "200vw",
+            left: "-50%",
+            top: "110%",
+            transform: "rotate(-30deg) translateY(110%)",
+            transformOrigin: "center center",
+          }}
+        >
+          <LogoLoop
+            logos={[
+              ...techLogos,
+              ...techLogos,
+              ...techLogos,
+              ...techLogos,
+              ...techLogos,
+            ]}
+            speed={80}
+            direction="left"
+            logoHeight={32}
+            gap={56}
+            scaleOnHover
+          />
+        </div>
+      </div>
+
+      <Container className="max-w-6xl relative z-10">
         <h1 className="font-serif text-4xl md:text-6xl mb-12 tracking-tight text-center">
           About Me
         </h1>
@@ -31,6 +182,18 @@ export default function About() {
               enableTilt={true}
               enableMobileTilt={true}
               onContactClick={() => console.log("Contact clicked")}
+            />
+          </div>
+
+          {/* Mobile: Horizontal LogoLoop between card and text */}
+          <div className="md:hidden w-[200vw] overflow-hidden py-4 text-foreground opacity-30 relative left-1/2 -translate-x-1/2">
+            <LogoLoop
+              logos={[...techLogos, ...techLogos, ...techLogos]}
+              speed={100}
+              direction="left"
+              logoHeight={20}
+              gap={32}
+              fadeOut
             />
           </div>
 

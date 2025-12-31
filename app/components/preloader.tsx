@@ -79,7 +79,7 @@ export default function Preloader({ onFinish }: { onFinish: () => void }) {
             key={i}
             custom={i}
             variants={columnVariants}
-            className="relative h-full flex-1 bg-[#F5F5F3]"
+            className="relative h-full flex-1 bg-[#fffaeb]"
           />
         ))}
       </div>
