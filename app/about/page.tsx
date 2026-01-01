@@ -131,7 +131,7 @@ export default function About() {
   const [isGithubHovered, setIsGithubHovered] = useState(false);
 
   return (
-    <section className="max-h-screen py-32 md:py-40 relative overflow-hidden">
+    <section className="min-h-screen py-32 md:py-40 relative overflow-hidden">
       {/* Desktop: Diagonal single line LogoLoop across screen */}
       <div className="hidden md:block fixed inset-0 pointer-events-auto z-0 overflow-hidden">
         <div

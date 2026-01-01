@@ -379,8 +379,9 @@ export const LogoLoop = React.memo<LogoLoopProps>(
         }
 
         const isNodeItem = "node" in item;
+        const itemTitle = (item as { title?: string }).title;
 
-        const content = isNodeItem ? (
+        const iconContent = isNodeItem ? (
           <span
             className={cx(
               "inline-flex items-center",
@@ -416,6 +417,17 @@ export const LogoLoop = React.memo<LogoLoopProps>(
             decoding="async"
             draggable={false}
           />
+        );
+
+        const content = (
+          <span className="inline-flex flex-col items-center gap-1">
+            {iconContent}
+            {itemTitle && (
+              <span className="text-[0.5rem] opacity-60 whitespace-nowrap leading-tight">
+                {itemTitle}
+              </span>
+            )}
+          </span>
         );
 
         const itemAriaLabel = isNodeItem
