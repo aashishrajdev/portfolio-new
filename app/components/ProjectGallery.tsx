@@ -4,6 +4,7 @@ import { useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useMediaQuery } from "../hooks/use-media-query";
 import Image from "next/image";
+import { Github, Globe } from "lucide-react";
 
 interface Project {
   id: string;
@@ -11,7 +12,9 @@ interface Project {
   year: string;
   description: string;
   image: string;
-  link?: string;
+
+  gitUrl?: string;
+  deployUrl?: string;
 }
 
 const projects: Project[] = [
@@ -21,7 +24,8 @@ const projects: Project[] = [
     year: "2024",
     description: "Real-time collaboration platform with WebSockets & Prisma.",
     image: "/project/1.png",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "2",
@@ -29,7 +33,8 @@ const projects: Project[] = [
     year: "2025",
     description: "Surveillance management system with live feeds & Clerk auth.",
     image: "/project/2.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "3",
@@ -37,7 +42,8 @@ const projects: Project[] = [
     year: "2024",
     description: "Interactive learning platform with Monaco code editor.",
     image: "/project/3.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "4",
@@ -45,7 +51,8 @@ const projects: Project[] = [
     year: "2025",
     description: "Enterprise component library & accessible design system.",
     image: "/project/4.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "5",
@@ -53,7 +60,8 @@ const projects: Project[] = [
     year: "2024",
     description: "Micro-savings fintech mobile app with React Native.",
     image: "/project/5.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "6",
@@ -61,7 +69,8 @@ const projects: Project[] = [
     year: "2024",
     description: "Crime analytics dashboard (National Finalist).",
     image: "/project/6.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "7",
@@ -69,7 +78,8 @@ const projects: Project[] = [
     year: "2024",
     description: "Award-winning hackathon web solution.",
     image: "/project/7.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
   {
     id: "8",
@@ -77,7 +87,8 @@ const projects: Project[] = [
     year: "2026",
     description: "Immersive portfolio with agentic AI integration.",
     image: "/project/10.jpg",
-    link: "#",
+    gitUrl: "https://github.com/aashishrajdev/syncsy/",
+    deployUrl: "https://syncsy.aashish.live",
   },
 ];
 
@@ -148,12 +159,17 @@ export default function ProjectGallery() {
                   >
                     {/* Collapsed Label (Rotated) */}
                     <motion.div
-                      className="absolute bottom-0 left-[2vw] flex w-[calc(100vh-2.6vw)] origin-[0_50%] transform justify-between pr-5 text-xl font-medium leading-[2.6vw] tracking-[-0.03em] -rotate-90 text-[2vw] whitespace-nowrap text-muted-foreground/30"
-                      animate={{ opacity: isActive ? 0 : 1 }}
+                      className={`absolute bottom-0 left-[2vw] flex w-[68vh] origin-[0_50%] transform justify-between pr-5 text-xl font-medium leading-[2.6vw] tracking-[-0.03em] -rotate-90 text-[2vw] whitespace-nowrap ${
+                        isActive
+                          ? "text-foreground"
+                          : "text-muted-foreground/30"
+                      }`}
+                      animate={{ opacity: 1 }}
                     >
                       <p className="label w-full border-b py-2 md:w-auto md:border-0 md:py-0">
                         {project.title}
                       </p>
+                      {isActive && <p>{project.year}</p>}
                     </motion.div>
 
                     {/* Expanded Content (Image + Info) */}
@@ -161,7 +177,7 @@ export default function ProjectGallery() {
                       className="h-full w-full rounded-[0.6vw] object-cover pl-2 pr-[1.3vw] pt-[1.3vw] pb-[1.3vw] md:pl-[4vw] relative"
                       animate={{ opacity: isActive ? 1 : 0 }}
                     >
-                      <div className="h-full w-full relative rounded-xl overflow-hidden">
+                      <div className="h-full w-full relative rounded-xl overflow-hidden group">
                         <Image
                           src={project.image}
                           alt={project.title}
@@ -169,22 +185,50 @@ export default function ProjectGallery() {
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
-                        {/* Gradient Overlay for Text Readability */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                        {/* Clean Image - No Text Overlay */}
 
-                        {/* Project Info Overlay */}
-                        <div className="absolute bottom-6 left-6 right-6">
-                          <h2 className="text-2xl md:text-3xl font-bold text-white mb-2 drop-shadow-lg leading-tight">
-                            {project.title}
-                          </h2>
-                          <div className="space-y-1">
-                            <p className="text-white/90 text-sm md:text-base font-medium max-w-md">
-                              {project.description}
-                            </p>
-                            <p className="text-white/70 text-xs md:text-sm font-mono opacity-80">
-                              {project.year}
-                            </p>
+                        {/* Hover Overlay: Description */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-8 pb-24 pointer-events-none">
+                          <div className="text-white overflow-hidden">
+                            {isActive && (
+                              <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.2, duration: 0.4 }} //transition delay is added to make the description appear after the image
+                                className="text-gray-200 text-lg mb-2 font-medium leading-relaxed max-w-md"
+                              >
+                                {project.description}
+                              </motion.p>
+                            )}
                           </div>
+                        </div>
+
+                        {/* Action Buttons - Bottom Right */}
+                        <div className="absolute bottom-6 right-6 flex gap-3 z-30 pointer-events-auto">
+                          {project.gitUrl && (
+                            <a
+                              href={project.gitUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-110"
+                              title="View Code"
+                              onClick={(e) => e.stopPropagation()} // Prevent clicking the card
+                            >
+                              <Github className="w-5 h-5" />
+                            </a>
+                          )}
+                          {project.deployUrl && (
+                            <a
+                              href={project.deployUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-3 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all duration-300 transform hover:scale-110"
+                              title="View Live Project"
+                              onClick={(e) => e.stopPropagation()} // Prevent clicking the card
+                            >
+                              <Globe className="w-5 h-5" />
+                            </a>
+                          )}
                         </div>
                       </div>
                     </motion.div>
@@ -202,7 +246,7 @@ export default function ProjectGallery() {
                 return (
                   <motion.div
                     key={project.id}
-                    className="relative cursor-pointer border-b border-foreground/10 overflow-hidden flex-shrink-0"
+                    className="relative cursor-pointer border-b border-border overflow-hidden flex-shrink-0"
                     initial={false}
                     animate={panelVariants.mobile(isActive)}
                     transition={{
@@ -213,9 +257,9 @@ export default function ProjectGallery() {
                     onClick={() => handleClick(project.id)}
                   >
                     <motion.div
-                      className="absolute flex items-center gap-4 whitespace-nowrap text-foreground bottom-0 left-4 top-0 translate-y-0 rotate-0"
+                      className="absolute flex items-center gap-4 whitespace-nowrap text-foreground bottom-0 left-4 top-0 translate-y-0 rotate-0 z-20"
                       style={{ width: "auto" }}
-                      animate={{ opacity: isActive ? 1 : 0.5 }}
+                      animate={{ opacity: isActive ? 0 : 1 }}
                     >
                       <p className="text-lg font-medium tracking-tight">
                         {project.title}
@@ -223,24 +267,67 @@ export default function ProjectGallery() {
                     </motion.div>
 
                     <motion.div
-                      className="absolute inset-0 px-4 py-4 pb-14"
+                      className="absolute inset-0"
                       initial={false}
                       animate={{ opacity: isActive ? 1 : 0 }}
                     >
-                      <div className="h-full w-full rounded-2xl overflow-hidden relative bg-muted">
+                      <div className="h-full w-full relative overflow-hidden bg-background">
                         <Image
                           src={project.image}
                           alt={project.title}
                           fill
                           className="object-cover"
+                          sizes="100vw"
                         />
-                        <div className="absolute bottom-6 left-6 right-6 z-10">
-                          <h2 className="text-2xl font-bold text-white mb-2">
-                            {project.title}
-                          </h2>
-                          <p className="text-white/90 text-sm">
-                            {project.description}
-                          </p>
+                        {/* Gradient Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+
+                        {/* Description Overlay */}
+                        <div className="absolute inset-0 flex items-end p-6 pb-20 pointer-events-none">
+                          <div className="text-white overflow-hidden">
+                            <h3 className="text-2xl font-bold mb-2">
+                              {project.title}{" "}
+                              <span className="text-lg font-normal opacity-70 ml-2">
+                                {project.year}
+                              </span>
+                            </h3>
+                            {isActive && (
+                              <motion.p
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5, duration: 0.5 }}
+                                className="text-gray-200 text-sm font-medium leading-relaxed"
+                              >
+                                {project.description}
+                              </motion.p>
+                            )}
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="absolute bottom-4 right-4 flex gap-3 z-30 pointer-events-auto">
+                          {project.gitUrl && (
+                            <a
+                              href={project.gitUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Github className="w-4 h-4" />
+                            </a>
+                          )}
+                          {project.deployUrl && (
+                            <a
+                              href={project.deployUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <Globe className="w-4 h-4" />
+                            </a>
+                          )}
                         </div>
                       </div>
                     </motion.div>
