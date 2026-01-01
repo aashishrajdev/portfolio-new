@@ -76,7 +76,7 @@ const projects: Project[] = [
     title: "Portfolio V3",
     year: "2026",
     description: "Immersive portfolio with agentic AI integration.",
-    image: "/project/8.jpg",
+    image: "/project/10.jpg",
     link: "#",
   },
 ];
