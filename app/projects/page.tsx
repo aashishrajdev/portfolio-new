@@ -4,7 +4,7 @@ import Container from "../components/Container";
 export default function Projects() {
   return (
     <section className="min-h-screen py-32 md:py-40 flex items-center justify-center bg-background">
-      <Container className="max-w-6xl w-full">
+      <Container className="max-w-6xl ">
         <h1 className="font-serif text-4xl md:text-6xl mb-8 tracking-tight text-center">
           Projects
         </h1>

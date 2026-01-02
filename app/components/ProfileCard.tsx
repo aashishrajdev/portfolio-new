@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import "./ProfileCard.css";
 
 interface ProfileCardProps {
-  avatarUrl: string;
+  avatarUrl?: string;
   iconUrl?: string;
   grainUrl?: string;
   innerGradient?: string;
@@ -22,11 +22,6 @@ interface ProfileCardProps {
   showUserInfo?: boolean;
   onContactClick?: () => void;
 }
-
-const DEFAULT_ICON_URL =
-  "data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Ctext x='30' y='32' font-family='monospace' font-weight='bold' font-size='14' fill='white' fill-opacity='0.25' text-anchor='middle' dominant-baseline='middle'%3E%26lt;/%26gt;%3C/text%3E%3C/svg%3E";
-const DEFAULT_GRAIN_URL =
-  "data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E";
 
 const DEFAULT_INNER_GRADIENT =
   "linear-gradient(145deg,#60496e8c 0%,#71C4FF44 100%)";
@@ -52,9 +47,9 @@ const adjust = (
 ): number => round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
 
 const ProfileCardComponent: React.FC<ProfileCardProps> = ({
-  avatarUrl = "<Placeholder for avatar URL>",
-  iconUrl = DEFAULT_ICON_URL,
-  grainUrl = DEFAULT_GRAIN_URL,
+  avatarUrl = "/self.png",
+  iconUrl = "/iconpattern.png",
+  grainUrl = "/grain.webp",
   innerGradient,
   behindGlowEnabled = true,
   behindGlowColor,
@@ -64,9 +59,9 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
   enableMobileTilt = false,
   mobileTiltSensitivity = 5,
   miniAvatarUrl,
-  name = "Javi A. Torres",
+  name = "Aashish Raj",
   title = "Software Engineer",
-  handle = "javicodes",
+  handle = "aashishrajdev",
   status = "Online",
   contactText = "Contact",
   showUserInfo = true,

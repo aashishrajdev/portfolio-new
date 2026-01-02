@@ -25,7 +25,7 @@ export default function Contact() {
       {/* Crowd Animation Section */}
       <div className="absolute bottom-0 left-0 w-full h-[50vh] md:h-[60vh] z-0 pointer-events-none">
         <div className="relative h-full w-full bg-background overflow-hidden transition-colors duration-500">
-          <CrowdCanvas className="absolute bottom-0 w-full h-full" />
+          <CrowdCanvas className="absolute bottom-[-50px] w-full h-full" />
         </div>
       </div>
     </section>

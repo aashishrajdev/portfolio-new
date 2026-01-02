@@ -88,6 +88,7 @@ const CrowdCanvas: React.FC<CrowdCanvasProps> = ({
     availablePeeps: [] as Peep[],
     crowd: [] as Peep[],
     stage: { width: 0, height: 0 },
+    scale: 1,
   });
 
   useEffect(() => {
@@ -132,10 +133,18 @@ const CrowdCanvas: React.FC<CrowdCanvasProps> = ({
 
     function resize() {
       if (!canvas) return;
-      stateRef.current.stage.width = canvas.clientWidth;
-      stateRef.current.stage.height = canvas.clientHeight;
-      canvas.width = stateRef.current.stage.width * devicePixelRatio;
-      canvas.height = stateRef.current.stage.height * devicePixelRatio;
+      const BASELINE_HEIGHT = 800;
+      const realWidth = canvas.clientWidth;
+      const realHeight = canvas.clientHeight;
+      const scale = Math.max(0.5, realHeight / BASELINE_HEIGHT);
+
+      stateRef.current.stage.width = realWidth / scale;
+      stateRef.current.stage.height = realHeight / scale;
+      canvas.width = realWidth * devicePixelRatio;
+      canvas.height = realHeight * devicePixelRatio;
+
+      // Store scale for render
+      stateRef.current.scale = scale;
 
       stateRef.current.crowd.forEach((peep) => {
         peep.walk?.kill();
@@ -223,7 +232,8 @@ const CrowdCanvas: React.FC<CrowdCanvasProps> = ({
       if (!canvas || !ctx) return;
       canvas.width = canvas.width; // Clear/Reset
       ctx.save();
-      ctx.scale(devicePixelRatio, devicePixelRatio);
+      const scale = stateRef.current.scale || 1;
+      ctx.scale(devicePixelRatio * scale, devicePixelRatio * scale);
 
       stateRef.current.crowd.forEach((peep) => {
         peep.render(ctx);
@@ -242,7 +252,7 @@ const CrowdCanvas: React.FC<CrowdCanvasProps> = ({
   return (
     <canvas
       ref={canvasRef}
-      className={`w-full h-full pointer-events-none ${className}`}
+      className={`w-[calc(100%)] h-full max-w-full pointer-events-none ${className}`}
     />
   );
 };

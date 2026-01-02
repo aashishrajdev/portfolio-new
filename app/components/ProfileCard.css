@@ -173,7 +173,7 @@
 
 .pc-card:hover .pc-shine,
 .pc-card.active .pc-shine {
-  filter: brightness(0.75) contrast(1.2) saturate(0.6) opacity(0.25);
+  filter: brightness(0.85) contrast(1.5) saturate(0.5);
   animation-play-state: paused;
 }
 
@@ -181,7 +181,7 @@
 .pc-card.active .pc-shine::before,
 .pc-card:hover .pc-shine::after,
 .pc-card.active .pc-shine::after {
-  opacity: 0.4;
+  opacity: 1;
 }
 
 .pc-shine::before {

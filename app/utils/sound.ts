@@ -1,4 +1,4 @@
-let isMuted = false;
+let isMuted = true;
 
 export const playSound = () => {
   if (isMuted) return;

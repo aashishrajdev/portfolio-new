@@ -4,6 +4,8 @@ import VariableProximity from "../components/VariableProximity";
 import ProfileCard from "../components/ProfileCard";
 import LogoLoop from "../components/LogoLoop";
 import { useRef, useState } from "react";
+import { useRouter } from "next/navigation";
+import { playSound } from "../utils/sound";
 import {
   SiJavascript,
   SiTypescript,
@@ -129,6 +131,8 @@ const techLogos = [
 export default function About() {
   const containerRef = useRef(null);
   const [isGithubHovered, setIsGithubHovered] = useState(false);
+  const [isResumeHovered, setIsResumeHovered] = useState(false);
+  const router = useRouter();
 
   return (
     <section className="min-h-screen py-32 md:py-40 relative overflow-hidden">
@@ -177,11 +181,13 @@ export default function About() {
               handle="aashishrajdev"
               status="Online"
               contactText="Contact Me"
-              avatarUrl="/self.png"
-              showUserInfo={false}
+              showUserInfo={true}
               enableTilt={true}
               enableMobileTilt={true}
-              onContactClick={() => console.log("Contact clicked")}
+              onContactClick={() => {
+                playSound();
+                router.push("/contact");
+              }}
             />
           </div>
 
@@ -230,7 +236,10 @@ export default function About() {
                   isGithubHovered ? "" : ""
                 }`}
                 style={{ verticalAlign: "baseline" }}
-                onMouseEnter={() => setIsGithubHovered(true)}
+                onMouseEnter={() => {
+                  setIsGithubHovered(true);
+                  playSound();
+                }}
                 onMouseLeave={() => setIsGithubHovered(false)}
               >
                 {/* Hand-drawn Annotation */}
@@ -271,7 +280,80 @@ export default function About() {
                 </div>
 
                 <VariableProximity
-                  label="GitHub."
+                  label="[GitHub.]"
+                  className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer underline decoration-foreground/30 hover:decoration-foreground/60 transition-colors"
+                  fromFontVariationSettings="'wght' 400"
+                  toFontVariationSettings="'wght' 900"
+                  containerRef={containerRef}
+                  radius={100}
+                  falloff="linear"
+                  inline
+                />
+              </a>
+              <VariableProximity
+                label=" or you can have my "
+                className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer"
+                fromFontVariationSettings="'wght' 400"
+                toFontVariationSettings="'wght' 900"
+                containerRef={containerRef}
+                radius={100}
+                falloff="linear"
+                inline
+              />
+              <a
+                href="/resume.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`inline-block relative z-50 align-baseline ${
+                  isResumeHovered ? "" : ""
+                }`}
+                style={{ verticalAlign: "baseline" }}
+                onMouseEnter={() => {
+                  setIsResumeHovered(true);
+                  playSound();
+                }}
+                onMouseLeave={() => setIsResumeHovered(false)}
+              >
+                {/* Hand-drawn Annotation */}
+                <div className="hidden md:block absolute top-9 -right-14 z-50 pointer-events-none select-none w-32">
+                  <svg
+                    width="85"
+                    height="50"
+                    viewBox="0 0 85 50"
+                    fill="none"
+                    className="text-foreground/40 mb-0"
+                    style={{ transform: "scaleX(-1)" }}
+                  >
+                    <path
+                      d="M25 40 Q 45 40, 70 5"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeDasharray="4 4"
+                      markerEnd="url(#arrowhead-resume)"
+                    />
+                    <defs>
+                      <marker
+                        id="arrowhead-resume"
+                        markerWidth="10"
+                        markerHeight="7"
+                        refX="9"
+                        refY="3.5"
+                        orient="auto"
+                      >
+                        <polygon
+                          points="0 0, 10 3.5, 0 7"
+                          fill="currentColor"
+                        />
+                      </marker>
+                    </defs>
+                  </svg>
+                  <span className="font-serif italic text-sm text-foreground/60 rotate-3 block whitespace-nowrap text-center pl-10">
+                    Download
+                  </span>
+                </div>
+
+                <VariableProximity
+                  label="[resume.]"
                   className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer underline decoration-foreground/30 hover:decoration-foreground/60 transition-colors"
                   fromFontVariationSettings="'wght' 400"
                   toFontVariationSettings="'wght' 900"
@@ -284,7 +366,7 @@ export default function About() {
             </div>
             <div
               className={`fixed inset-0 bg-white/80 dark:bg-black/80 z-40 transition-opacity duration-100 pointer-events-none ${
-                isGithubHovered ? "opacity-100" : "opacity-0"
+                isGithubHovered || isResumeHovered ? "opacity-100" : "opacity-0"
               }`}
             />
           </div>
