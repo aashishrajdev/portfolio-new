@@ -124,21 +124,21 @@ export default function ProjectGallery() {
 
   const panelVariants = {
     desktop: (isActive: boolean) => ({
-      width: isActive ? "28rem" : "4rem",
+      width: isActive ? "52.5vh" : "6rem",
       height: "100%",
     }),
     mobile: (isActive: boolean) => ({
       width: "100%",
-      height: isActive ? "20rem" : "4rem",
+      height: isActive ? "30rem" : "4rem",
     }),
   };
 
   return (
-    <section className="h-auto lg:h-full w-full overflow-hidden bg-background rounded-3xl">
+    <section className="h-auto lg:h-[70vh] w-full overflow-hidden bg-background rounded-3xl">
       <div className="h-auto lg:h-full w-full overflow-hidden">
         {/* Desktop Layout (Applied user structure) */}
         {isDesktop ? (
-          <div className="flex h-full w-full flex-col lg:flex-row bg-background text-foreground">
+          <div className="flex h-full w-full flex-col lg:flex-row bg-background text-foreground overflow-x-auto no-scrollbar">
             <div className="mx-auto flex w-full flex-col md:h-full md:flex-row lg:min-w-full overflow-hidden">
               {projects.map((project) => {
                 const isActive = selectedId === project.id;
@@ -174,7 +174,7 @@ export default function ProjectGallery() {
 
                     {/* Expanded Content (Image + Info) */}
                     <motion.div
-                      className="h-full w-full rounded-[0.6vw] object-cover pl-2 pr-[1.3vw] pt-[1.3vw] pb-[1.3vw] md:pl-[4vw] relative"
+                      className="h-full w-full rounded-[0.6vw] object-cover p-4 md:pl-16 relative"
                       animate={{ opacity: isActive ? 1 : 0 }}
                     >
                       <div className="h-full w-full relative rounded-xl overflow-hidden group">
