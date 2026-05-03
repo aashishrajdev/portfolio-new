@@ -7,6 +7,7 @@ import {
 } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./components/ClientLayout";
+import { Analytics } from "@vercel/analytics/next";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,6 +50,7 @@ export default function RootLayout({
         <Providers>
           <ClientLayout>{children}</ClientLayout>
         </Providers>
+        <Analytics />
       </body>
     </html>
   );
