@@ -57,24 +57,26 @@ export default function Navbar() {
       initial={navbarLoaded ? false : { opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.8, delay: 0.5, ease: "easeOut" }}
-      className="fixed top-8 left-0 right-0 z-50 flex justify-center pointer-events-none"
+      className="fixed top-[clamp(1rem,2vw,2rem)] left-0 right-0 z-50 flex justify-center pointer-events-none"
     >
-      <div className="flex items-center gap-6 md:gap-8 pointer-events-auto">
+      <div className="flex items-center gap-[clamp(1rem,1.5vw,2rem)] pointer-events-auto">
         {navItems.map((item) => {
           const isActive = pathname === item.path;
           return (
             <Link
               key={item.name}
               href={item.path}
-              className={`group flex items-baseline gap-1 relative text-sm md:text-base font-light transition-colors duration-300 ${
+              className={`group flex items-baseline gap-1 relative fluid-fs-copy-sm font-light transition-colors duration-300 ${
                 isActive
                   ? "text-foreground"
                   : "text-foreground/50 hover:text-foreground"
               }`}
-              onMouseEnter={() => playSound()}
+              onClick={() => playSound()}
             >
-              <span className="font-serif tracking-wide">{item.name}</span>
-              <span className="text-[10px] font-mono opacity-50 border border-foreground/20 rounded px-1 group-hover:border-foreground/50 transition-colors">
+              <span className="font-serif tracking-wide fluid-fs-copy-sm">
+                {item.name}
+              </span>
+              <span className="fluid-fs-copy-xs font-mono opacity-50 border border-foreground/20 rounded px-1 group-hover:border-foreground/50 transition-colors">
                 {item.key}
               </span>
             </Link>

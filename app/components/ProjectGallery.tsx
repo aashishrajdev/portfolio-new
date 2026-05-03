@@ -1,10 +1,11 @@
 "use client";
 
-import { useState, useCallback, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useCallback } from "react";
+import { motion } from "framer-motion";
 import { useMediaQuery } from "../hooks/use-media-query";
 import Image from "next/image";
 import { Github, Globe } from "lucide-react";
+import projectsData from "../content/projects.json";
 
 interface Project {
   id: string;
@@ -17,106 +18,24 @@ interface Project {
   deployUrl?: string;
 }
 
-const projects: Project[] = [
-  {
-    id: "1",
-    title: "Syncsy",
-    year: "2024",
-    description: "Real-time collaboration platform with WebSockets & Prisma.",
-    image: "/project/1.png",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "2",
-    title: "UrbanEyes",
-    year: "2025",
-    description: "Surveillance management system with live feeds & Clerk auth.",
-    image: "/project/2.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "3",
-    title: "Learnod V2",
-    year: "2024",
-    description: "Interactive learning platform with Monaco code editor.",
-    image: "/project/3.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "4",
-    title: "Spinach UI",
-    year: "2025",
-    description: "Enterprise component library & accessible design system.",
-    image: "/project/4.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "5",
-    title: "YMoney",
-    year: "2024",
-    description: "Micro-savings fintech mobile app with React Native.",
-    image: "/project/5.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "6",
-    title: "Police Hackathon",
-    year: "2024",
-    description: "Crime analytics dashboard (National Finalist).",
-    image: "/project/6.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "7",
-    title: "Web-Vibe",
-    year: "2024",
-    description: "Award-winning hackathon web solution.",
-    image: "/project/7.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-  {
-    id: "8",
-    title: "Portfolio V3",
-    year: "2026",
-    description: "Immersive portfolio with agentic AI integration.",
-    image: "/project/10.jpg",
-    gitUrl: "https://github.com/aashishrajdev/syncsy/",
-    deployUrl: "https://syncsy.aashish.live",
-  },
-];
+const projects = projectsData as Project[];
 
 export default function ProjectGallery() {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-  const [hoveredId, setHoveredId] = useState<string | null>(null);
-  const [selectedId, setSelectedId] = useState<string | null>(null);
-
-  // Set initial selected ID once mounted to avoid hydration mismatch
-  useEffect(() => {
-    setSelectedId(projects[0]?.id ?? null);
-  }, []);
+  const [selectedId, setSelectedId] = useState<string | null>(
+    projects[0]?.id ?? null,
+  );
 
   const handleMouseEnter = useCallback(
     (id: string) => {
       if (isDesktop) {
-        setHoveredId(id);
         setSelectedId(id);
       }
     },
-    [isDesktop]
+    [isDesktop],
   );
 
-  const handleMouseLeave = useCallback(() => {
-    if (isDesktop) {
-      setHoveredId(null);
-    }
-  }, [isDesktop]);
+  const handleMouseLeave = useCallback(() => {}, []);
 
   const handleClick = useCallback((id: string) => {
     setSelectedId((prev) => (prev === id ? null : id));
@@ -124,7 +43,7 @@ export default function ProjectGallery() {
 
   const panelVariants = {
     desktop: (isActive: boolean) => ({
-      width: isActive ? "52.5vh" : "6rem",
+      width: isActive ? "calc(100% - 24rem)" : "4rem",
       height: "100%",
     }),
     mobile: (isActive: boolean) => ({
@@ -134,7 +53,7 @@ export default function ProjectGallery() {
   };
 
   return (
-    <section className="h-auto lg:h-[70vh] w-full overflow-hidden bg-background rounded-3xl">
+    <section className="h-auto lg:h-[60vh] w-full overflow-hidden bg-background rounded-3xl">
       <div className="h-auto lg:h-full w-full overflow-hidden">
         {/* Desktop Layout (Applied user structure) */}
         {isDesktop ? (
@@ -169,7 +88,6 @@ export default function ProjectGallery() {
                       <p className="label w-full border-b py-2 md:w-auto md:border-0 md:py-0">
                         {project.title}
                       </p>
-                      {isActive && <p>{project.year}</p>}
                     </motion.div>
 
                     {/* Expanded Content (Image + Info) */}
@@ -185,10 +103,21 @@ export default function ProjectGallery() {
                           className="object-cover"
                           sizes="(max-width: 768px) 100vw, 33vw"
                         />
+                        {/* Metadata stack - year + title for readability */}
+                        <div className="absolute left-4 top-4 flex max-w-[78%] flex-col gap-2 z-30">
+                          <div className="inline-flex w-fit items-center rounded-full border border-white/20 bg-black/65 px-3 py-1 text-[0.7rem] uppercase tracking-[0.22em] text-white/90 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+                            {project.year}
+                          </div>
+                          <div className="inline-flex w-fit rounded-full border border-white/15 bg-black/60 px-3 py-2 backdrop-blur-md shadow-[0_10px_30px_rgba(0,0,0,0.35)]">
+                            <p className="text-sm font-medium tracking-tight text-white drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]">
+                              {project.title}
+                            </p>
+                          </div>
+                        </div>
                         {/* Clean Image - No Text Overlay */}
 
                         {/* Hover Overlay: Description */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent flex items-end p-8 pb-24 pointer-events-none">
+                        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent flex items-end p-8 pb-24 pointer-events-none">
                           <div className="text-white overflow-hidden">
                             {isActive && (
                               <motion.p
@@ -241,12 +170,12 @@ export default function ProjectGallery() {
           /* Mobile Layout (Preserved as requested) */
           <div className="h-auto w-full overflow-hidden">
             <div className="flex h-auto w-full flex-col">
-              {projects.map((project, index) => {
+              {projects.map((project) => {
                 const isActive = selectedId === project.id;
                 return (
                   <motion.div
                     key={project.id}
-                    className="relative cursor-pointer border-b border-border overflow-hidden flex-shrink-0"
+                    className="relative cursor-pointer border-b border-border overflow-hidden shrink-0"
                     initial={false}
                     animate={panelVariants.mobile(isActive)}
                     transition={{
@@ -280,7 +209,7 @@ export default function ProjectGallery() {
                           sizes="100vw"
                         />
                         {/* Gradient Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
 
                         {/* Description Overlay */}
                         <div className="absolute inset-0 flex items-end p-6 pb-20 pointer-events-none">
@@ -312,6 +241,7 @@ export default function ProjectGallery() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all"
+                              title="View Code"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Github className="w-4 h-4" />
@@ -323,6 +253,7 @@ export default function ProjectGallery() {
                               target="_blank"
                               rel="noopener noreferrer"
                               className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white hover:text-black transition-all"
+                              title="View Live Project"
                               onClick={(e) => e.stopPropagation()}
                             >
                               <Globe className="w-4 h-4" />

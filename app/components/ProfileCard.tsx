@@ -1,6 +1,10 @@
 import React, { useEffect, useRef, useCallback, useMemo } from "react";
 import "./ProfileCard.css";
 
+type DeviceMotionEventWithPermission = typeof DeviceMotionEvent & {
+  requestPermission?: () => Promise<PermissionState>;
+};
+
 interface ProfileCardProps {
   avatarUrl?: string;
   iconUrl?: string;
@@ -43,7 +47,7 @@ const adjust = (
   fMin: number,
   fMax: number,
   tMin: number,
-  tMax: number
+  tMax: number,
 ): number => round(tMin + ((tMax - tMin) * (v - fMin)) / (fMax - fMin));
 
 const ProfileCardComponent: React.FC<ProfileCardProps> = ({
@@ -111,7 +115,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
         "--pointer-from-center": `${clamp(
           Math.hypot(percentY - 50, percentX - 50) / 50,
           0,
-          1
+          1,
         )}`,
         "--pointer-from-top": `${percentY / 100}`,
         "--pointer-from-left": `${percentX / 100}`,
@@ -204,7 +208,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       const { x, y } = getOffsets(event, shell);
       tiltEngine.setTarget(x, y);
     },
-    [tiltEngine]
+    [tiltEngine],
   );
 
   const handlePointerEnter = useCallback(
@@ -222,7 +226,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       const { x, y } = getOffsets(event, shell);
       tiltEngine.setTarget(x, y);
     },
-    [tiltEngine]
+    [tiltEngine],
   );
 
   const handlePointerLeave = useCallback(() => {
@@ -258,18 +262,18 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
       const x = clamp(
         centerX + gamma * mobileTiltSensitivity,
         0,
-        shell.clientWidth
+        shell.clientWidth,
       );
       const y = clamp(
         centerY +
           (beta - ANIMATION_CONFIG.DEVICE_BETA_OFFSET) * mobileTiltSensitivity,
         0,
-        shell.clientHeight
+        shell.clientHeight,
       );
 
       tiltEngine.setTarget(x, y);
     },
-    [tiltEngine, mobileTiltSensitivity]
+    [tiltEngine, mobileTiltSensitivity],
   );
 
   useEffect(() => {
@@ -289,7 +293,8 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
 
     const handleClick = () => {
       if (!enableMobileTilt || location.protocol !== "https:") return;
-      const anyMotion = window.DeviceMotionEvent as any;
+      const anyMotion =
+        window.DeviceMotionEvent as DeviceMotionEventWithPermission;
       if (anyMotion && typeof anyMotion.requestPermission === "function") {
         anyMotion
           .requestPermission()
@@ -297,7 +302,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             if (state === "granted") {
               window.addEventListener(
                 "deviceorientation",
-                deviceOrientationHandler
+                deviceOrientationHandler,
               );
             }
           })
@@ -336,28 +341,29 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
     handleDeviceOrientation,
   ]);
 
-  const cardStyle = useMemo(
-    () =>
-      ({
-        "--icon": iconUrl ? `url(${iconUrl})` : "none",
-        "--grain": grainUrl ? `url(${grainUrl})` : "none",
-        "--inner-gradient": innerGradient ?? DEFAULT_INNER_GRADIENT,
-        "--behind-glow-color": behindGlowColor ?? "rgba(125, 190, 255, 0.67)",
-        "--behind-glow-size": behindGlowSize ?? "50%",
-      } as React.CSSProperties),
-    [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize]
-  );
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    wrap.style.setProperty("--icon", iconUrl ? `url(${iconUrl})` : "none");
+    wrap.style.setProperty("--grain", grainUrl ? `url(${grainUrl})` : "none");
+    wrap.style.setProperty(
+      "--inner-gradient",
+      innerGradient ?? DEFAULT_INNER_GRADIENT,
+    );
+    wrap.style.setProperty(
+      "--behind-glow-color",
+      behindGlowColor ?? "rgba(125, 190, 255, 0.67)",
+    );
+    wrap.style.setProperty("--behind-glow-size", behindGlowSize ?? "50%");
+  }, [iconUrl, grainUrl, innerGradient, behindGlowColor, behindGlowSize]);
 
   const handleContactClick = useCallback(() => {
     onContactClick?.();
   }, [onContactClick]);
 
   return (
-    <div
-      ref={wrapRef}
-      className={`pc-card-wrapper ${className}`.trim()}
-      style={cardStyle}
-    >
+    <div ref={wrapRef} className={`pc-card-wrapper ${className}`.trim()}>
       {behindGlowEnabled && <div className="pc-behind" />}
       <div ref={shellRef} className="pc-card-shell">
         <section className="pc-card">
@@ -365,6 +371,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
             <div className="pc-shine" />
             <div className="pc-glare" />
             <div className="pc-content pc-avatar-content">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 className="avatar"
                 src={avatarUrl}
@@ -379,6 +386,7 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                 <div className="pc-user-info">
                   <div className="pc-user-details">
                     <div className="pc-mini-avatar">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img
                         src={miniAvatarUrl || avatarUrl}
                         alt={`${name || "User"} mini avatar`}
@@ -398,7 +406,6 @@ const ProfileCardComponent: React.FC<ProfileCardProps> = ({
                   <button
                     className="pc-contact-btn"
                     onClick={handleContactClick}
-                    style={{ pointerEvents: "auto" }}
                     type="button"
                     aria-label={`Contact ${name || "user"}`}
                   >

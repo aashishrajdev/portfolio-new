@@ -135,7 +135,7 @@ export default function About() {
   const router = useRouter();
 
   return (
-    <section className="min-h-screen py-32 md:py-40 relative overflow-hidden">
+    <section className="min-h-screen fluid-page-pad-y relative overflow-hidden">
       {/* Desktop: Diagonal single line LogoLoop across screen */}
       <div className="hidden md:block fixed inset-0 pointer-events-auto z-0 overflow-hidden">
         <div
@@ -165,12 +165,12 @@ export default function About() {
         </div>
       </div>
 
-      <Container className="max-w-6xl relative z-10">
-        <h1 className="font-serif text-4xl md:text-6xl mb-12 tracking-tight text-center">
+      <Container className="fluid-shell relative z-10">
+        <h1 className="font-serif fluid-fs-title mb-(--fluid-page-gap-lg) tracking-tight text-center leading-none">
           About Me
         </h1>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center relative">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-(--fluid-page-gap-lg) items-center relative">
           {/* Divider Line (Desktop Only) */}
           <div className="hidden md:block absolute left-1/2 top-0 bottom-0 border-l border-dotted border-foreground/20 -translate-x-1/2" />
 
@@ -192,7 +192,7 @@ export default function About() {
           </div>
 
           {/* Mobile: Horizontal LogoLoop between card and text */}
-          <div className="md:hidden w-[200vw] overflow-hidden py-4 text-foreground opacity-30 relative left-1/2 -translate-x-1/2">
+          <div className="md:hidden w-[200vw] overflow-hidden py-(--fluid-page-gap-sm) text-foreground opacity-30 relative left-1/2 -translate-x-1/2">
             <LogoLoop
               logos={[...techLogos, ...techLogos, ...techLogos]}
               speed={100}
@@ -203,15 +203,15 @@ export default function About() {
             />
           </div>
 
-          <div className="space-y-12 text-foreground/80 leading-relaxed md:text-lg">
+          <div className="space-y-(--fluid-page-gap-lg) text-foreground/80 leading-relaxed fluid-fs-copy-lg">
             <div
-              className="mb-20 text-center md:text-left"
+              className="mb-(--fluid-page-gap-lg) text-center md:text-left"
               ref={containerRef}
               style={{ position: "relative" }}
             >
               <VariableProximity
                 label={`22yo CSE grad (Sep '20).`}
-                className="font-serif text-foreground/90 tracking-tight text-center md:text-left block text-lg md:text-2xl leading-relaxed cursor-pointer"
+                className="font-serif text-foreground/90 tracking-tight text-center md:text-left block fluid-fs-copy-lg leading-relaxed cursor-pointer"
                 fromFontVariationSettings="'wght' 400"
                 toFontVariationSettings="'wght' 900"
                 containerRef={containerRef}
@@ -220,7 +220,7 @@ export default function About() {
               />
               <VariableProximity
                 label={` I'm a Web Developer and DevOps engineer focused on building clean interfaces and reliable systems. I actively contribute to open-source projects and care deeply about how products look, feel, and—most importantly—how they work in real-world conditions. You can find more of my work on `}
-                className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer"
+                className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline fluid-fs-copy-lg leading-relaxed cursor-pointer"
                 fromFontVariationSettings="'wght' 400"
                 toFontVariationSettings="'wght' 900"
                 containerRef={containerRef}
@@ -281,7 +281,7 @@ export default function About() {
 
                 <VariableProximity
                   label="[GitHub.]"
-                  className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer underline decoration-foreground/30 hover:decoration-foreground/60 transition-colors"
+                  className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline fluid-fs-copy-lg leading-relaxed cursor-pointer underline decoration-foreground/30 hover:decoration-foreground/60 transition-colors"
                   fromFontVariationSettings="'wght' 400"
                   toFontVariationSettings="'wght' 900"
                   containerRef={containerRef}
@@ -292,7 +292,7 @@ export default function About() {
               </a>
               <VariableProximity
                 label=" or you can have my "
-                className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline text-lg md:text-2xl leading-relaxed cursor-pointer"
+                className="font-serif text-foreground/90 tracking-tight text-center md:text-left inline fluid-fs-copy-lg leading-relaxed cursor-pointer"
                 fromFontVariationSettings="'wght' 400"
                 toFontVariationSettings="'wght' 900"
                 containerRef={containerRef}

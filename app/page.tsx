@@ -5,19 +5,19 @@ import { playSound } from "./utils/sound";
 
 export default function Home() {
   return (
-    <section className="flex min-h-dvh flex-col items-center justify-center text-foreground selection:bg-white/20 selection:text-white">
-      <Container className="flex flex-col items-center">
-        <h1 className="font-serif text-3xl md:text-5xl leading-[1.1] tracking-tight text-center mb-6">
+    <section className="flex min-h-dvh flex-col items-center justify-center text-foreground selection:bg-white/20 selection:text-white fluid-page-pad-y">
+      <Container className="flex flex-col items-center justify-center gap-(--fluid-page-gap-md)">
+        <h1 className="font-serif fluid-fs-title leading-[1.05] tracking-tight text-center">
           YO, I&apos;M AASHISH
           <br />
           <span className="text-foreground/60">AND I DO FULL STACK </span>
         </h1>
 
-        <p className="mt-6 text-foreground/80 text-sm md:text-base tracking-wide text-center">
+        <p className="text-foreground/80 fluid-fs-copy-base tracking-wide text-center max-w-[32ch]">
           Software Engineer & Full Stack Developer
         </p>
 
-        <div className="mt-10 font-serif tracking-widest text-foreground/70 text-lg md:text-base flex flex-col items-center gap-4">
+        <div className="font-serif tracking-widest text-foreground/70 fluid-fs-copy-base flex flex-col items-center gap-(--fluid-page-gap-sm)">
           <a
             href="mailto:rajaashish.dev@gmail.com"
             className="hover:text-foreground transition-colors duration-300"
@@ -43,7 +43,7 @@ export default function Home() {
             </span>
           </a>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row items-center gap-(--fluid-page-gap-sm) sm:gap-(--fluid-page-gap-md)">
             <a
               href="https://github.com/aashishrajdev/"
               target="_blank"
