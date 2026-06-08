@@ -3,6 +3,16 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Native CSS smooth page transitions (cross-document) */
+@view-transition {
+  navigation: auto;
+}
+
+::view-transition-group(*) {
+  animation-duration: 0.3s;
+  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -98,6 +108,21 @@
 
 .fluid-fs-hero {
   font-size: var(--fluid-fs-hero);
+}
+
+/* Home: viewport-fit name — scales by BOTH width and height so it
+   always fits one screen, never clipped, never scrolls. */
+.home-name {
+  font-size: min(11vw, 15vh);
+}
+
+/* 2.5D tilt card (Works) */
+.tilt {
+  transform-style: preserve-3d;
+  transition:
+    transform 0.18s ease,
+    background-color 0.3s ease;
+  will-change: transform;
 }
 
 ::view-transition-old(root),

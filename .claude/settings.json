@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npm run *)",
+      "Bash(git mv *)",
+      "Bash(sed -i 's#\"\\\\.\\\\./components/#\"../#g; s#\"\\\\.\\\\./content/#\"../../content/#g; s#\"\\\\.\\\\./utils/#\"../../utils/#g; s#\"\\\\.\\\\./context/#\"../../context/#g' AboutSection.tsx ContactSection.tsx ProjectsSection.tsx WorksSection.tsx)",
+      "Bash(sed -i 's#\"\\\\./components/#\"../#g; s#\"\\\\./utils/#\"../../utils/#g' HomeSection.tsx)",
+      "Bash(grep -rn \"from \\\\\"\\\\.\\\\./\\\\.\\\\?\\\\.\\\\?/\\\\?\" *.tsx)",
+      "Bash(git rm *)"
+    ]
+  }
+}

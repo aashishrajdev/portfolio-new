@@ -1,16 +1,12 @@
 "use client";
 
 import { motion, Variants } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 
 const LINES = ["Hi There,", "Welcome to my portfolio"];
 
 export default function Preloader({ onFinish }: { onFinish: () => void }) {
-  const [dimension, setDimension] = useState({ width: 0, height: 0 });
-
   useEffect(() => {
-    setDimension({ width: window.innerWidth, height: window.innerHeight });
-
     // The text animation takes roughly 2.2s.
     // We wait a bit, then trigger onFinish which allows AnimatePresence to unmount us.
     // The exit animation then runs.

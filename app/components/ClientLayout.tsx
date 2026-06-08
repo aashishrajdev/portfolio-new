@@ -2,46 +2,43 @@
 
 import { useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
-import { usePathname } from "next/navigation";
 import Preloader from "./preloader";
-import PageReveal from "./PageReveal";
 import { PreloaderProvider, usePreloader } from "../context/PreloaderContext";
+import { ViewProvider } from "../context/ViewContext";
 import Navbar from "./Navbar";
 import Controls from "./Controls";
 import ClickSpark from "./ClickSpark";
 
 function InnerLayout({ children }: { children: React.ReactNode }) {
   const { showPreloader, setShowPreloader } = usePreloader();
-  const pathname = usePathname();
-  const isHome = pathname === "/";
 
   useEffect(() => {
-    // If not on home, ensure preloader state is off immediately
-    if (!isHome && showPreloader) {
-      setShowPreloader(false);
-    }
-  }, [isHome, showPreloader, setShowPreloader]);
-
-  useEffect(() => {
-    // Only lock scroll if preloader is showing AND we are on home
-    if (showPreloader && isHome) {
-      document.body.style.overflow = "hidden";
-    } else {
+    // Desktop fits one viewport (no scroll); phones/tablets stay scrollable.
+    const mq = window.matchMedia("(min-width: 768px)");
+    const apply = () => {
+      document.body.style.overflow = mq.matches ? "hidden" : "";
+    };
+    apply();
+    mq.addEventListener("change", apply);
+    return () => {
+      mq.removeEventListener("change", apply);
       document.body.style.overflow = "";
-    }
-  }, [showPreloader, isHome]);
+    };
+  }, []);
 
   return (
-    <ClickSpark sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
-      <AnimatePresence mode="wait">
-        {showPreloader && isHome && (
-          <Preloader onFinish={() => setShowPreloader(false)} />
-        )}
-      </AnimatePresence>
-      <Navbar />
-      <Controls />
-      <PageReveal>{children}</PageReveal>
-    </ClickSpark>
+    <ViewProvider>
+      <ClickSpark sparkSize={10} sparkRadius={20} sparkCount={10} duration={500}>
+        <AnimatePresence mode="wait">
+          {showPreloader && (
+            <Preloader onFinish={() => setShowPreloader(false)} />
+          )}
+        </AnimatePresence>
+        <Navbar />
+        <Controls />
+        {children}
+      </ClickSpark>
+    </ViewProvider>
   );
 }
 
