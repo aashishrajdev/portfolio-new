@@ -1,7 +1,7 @@
 "use client";
 
 import type { ElementType, ReactNode } from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import { cn } from "@/lib/utils";
 
 type MotionTag = "div" | "p" | "li" | "span" | "section" | "ul";

@@ -41,7 +41,7 @@ export function Panel({
   return (
     <Component
       className={cn(
-        "overflow-hidden rounded-md border border-border bg-surface",
+        "frosted overflow-hidden rounded-md border border-border",
         className
       )}
     >

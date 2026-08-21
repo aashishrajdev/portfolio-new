@@ -50,7 +50,7 @@ const EXPERTISE: Expertise[] = [
     title: "Full-Stack Product",
     icon: FiLayers,
     blurb:
-      "from the pixel to the pipeline — accessible interfaces wired to systems that actually work.",
+      "from the pixel to the pipeline: accessible interfaces wired to systems that actually work.",
     capabilities: [
       "React / Next.js, Angular Ionic",
       "TypeScript end to end",
@@ -90,7 +90,7 @@ export default function About() {
           <Panel title="readme.md" className="h-full" bodyClassName="p-6 sm:p-8">
             <div className="space-y-4 text-base leading-relaxed text-muted-foreground sm:text-lg">
               <p>
-                <span className="text-foreground">i&apos;m aashish</span> — a 22yo
+                <span className="text-foreground">i&apos;m aashish</span>, a 22yo
                 cse grad (sep &apos;20), from uttarakhand, currently in pune. i
                 build web products and the infrastructure underneath them.
               </p>
@@ -101,7 +101,7 @@ export default function About() {
                 probably should.
               </p>
               <p>
-                i care about the boring parts — error budgets, reproducible
+                i care about the boring parts: error budgets, reproducible
                 builds, the gap between &quot;works on my machine&quot; and
                 &quot;works at 3am&quot;. confident through restraint, monochrome
                 by choice.
@@ -142,12 +142,12 @@ export default function About() {
                   learning
                 </p>
                 <p className="text-base text-foreground">
-                  ai — langchain, langgraph, mcp tools
+                  ai: langchain, langgraph, mcp tools
                 </p>
               </div>
 
               <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-md border border-border bg-border">
-                <div className="bg-surface p-4">
+                <div className="frosted p-4">
                   <dt className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
                     uptime
                   </dt>
@@ -155,7 +155,7 @@ export default function About() {
                     <Counter value={YEARS_CODING} suffix=" yrs" />
                   </dd>
                 </div>
-                <div className="bg-surface p-4">
+                <div className="frosted p-4">
                   <dt className="font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground">
                     status
                   </dt>

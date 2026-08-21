@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Texture } from "@/components/texture";
@@ -11,31 +11,27 @@ import { Rail } from "@/components/rail";
 import { CommandPalette } from "@/components/command-palette";
 import { Footer } from "@/components/footer";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+// Body copy. Variable weight axis, so no explicit weight list is needed.
+const nunito = Nunito({
+  variable: "--font-nunito",
   subsets: ["latin"],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
-const instrumentSerif = Instrument_Serif({
-  variable: "--font-serif",
-  weight: "400",
-  style: ["normal", "italic"],
+// Display face for headings. Fredoka is variable across 300-700 and has no
+// italic axis — `italic` on these headings renders as a synthesised oblique.
+const fredoka = Fredoka({
+  variable: "--font-fredoka",
   subsets: ["latin"],
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://aashishraj.dev"),
   title: {
-    default: "Aashish Raj — Backend & Full-Stack Engineer",
+    default: "Aashish Raj, Backend & Full-Stack Engineer",
     template: "%s · Aashish Raj",
   },
   description:
-    "Aashish Raj — backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems, from the pixel to the pipeline.",
+    "Aashish Raj is a backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems, from the pixel to the pipeline.",
   keywords: [
     "Aashish Raj",
     "Backend Engineer",
@@ -58,15 +54,15 @@ export const metadata: Metadata = {
     locale: "en_US",
     url: "https://aashishraj.dev",
     siteName: "Aashish Raj",
-    title: "Aashish Raj — Backend & Full-Stack Engineer",
+    title: "Aashish Raj, Backend & Full-Stack Engineer",
     description:
-      "Backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems - from the pixel to the pipeline.",
+      "Backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems, from the pixel to the pipeline.",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Aashish Raj — Backend & Full-Stack Engineer",
+    title: "Aashish Raj, Backend & Full-Stack Engineer",
     description:
-      "Backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems - from the pixel to the pipeline.",
+      "Backend & full-stack engineer and DevOps practitioner. I build clean interfaces and reliable systems, from the pixel to the pipeline.",
     creator: "@aashishrajdev",
   },
 };
@@ -80,7 +76,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} ${instrumentSerif.variable}`}
+      className={`${nunito.variable} ${fredoka.variable}`}
     >
       <body className="overflow-x-hidden bg-background text-foreground antialiased font-sans">
         <ThemeProvider>

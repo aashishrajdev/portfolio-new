@@ -1,4 +1,4 @@
-import type { Variants } from "framer-motion";
+import type { Variants } from "motion/react";
 
 /**
  * Subtle fade + slide-up. Use with initial="hidden" animate/whileInView="visible".

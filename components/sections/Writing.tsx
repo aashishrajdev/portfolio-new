@@ -19,7 +19,7 @@ const POSTS: BlogPost[] = [
   {
     title: "building a fastapi mcp server with grpc tools",
     excerpt:
-      "wiring an mcp server to query a live backend over grpc/protobuf — and why the model context protocol fits backend tooling.",
+      "wiring an mcp server to query a live backend over grpc/protobuf, and why the model context protocol fits backend tooling.",
     date: "2026-04-12",
     readTime: "8 min read",
     tags: ["python", "fastapi", "grpc"],
@@ -37,7 +37,7 @@ const POSTS: BlogPost[] = [
   {
     title: "zero-downtime releases on aws amplify ci/cd",
     excerpt:
-      "shipping the unigo platform without a maintenance window — the pipeline, the gotchas, and the rollback plan.",
+      "shipping the unigo platform without a maintenance window: the pipeline, the gotchas, and the rollback plan.",
     date: "2025-09-21",
     readTime: "6 min read",
     tags: ["aws", "ci/cd", "devops"],
@@ -140,7 +140,7 @@ export default function Writing() {
         delay={0.1}
         className="mt-8 font-mono text-xs uppercase tracking-[0.18em] text-muted-foreground"
       >
-        more posts soon — follow along on{" "}
+        more posts soon. follow along on{" "}
         <a
           href="https://github.com/aashishrajdev"
           target="_blank"

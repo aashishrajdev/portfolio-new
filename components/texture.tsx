@@ -1,17 +1,20 @@
+import { DotGrid } from "@/components/dot-grid";
+
 /**
  * Texture — fixed full-screen ambient background.
  *
  * Two layers, both fixed/inset-0/-z-10/pointer-events-none:
- *   1. dotted-grid (1px dots, ~24px pitch, ~4% opacity)
+ *   1. DotGrid — canvas dot grid (1px dots, 24px pitch) that lifts toward the
+ *      pointer. Colour flips with the theme.
  *   2. faint SVG fractalNoise grain (mix-blend-soft-light, ~3% opacity)
  *
- * Rendered once in the root layout. Server component (no interactivity).
+ * Rendered once in the root layout.
  */
 export function Texture() {
   return (
     <div aria-hidden className="pointer-events-none fixed inset-0 -z-10">
       {/* Dotted grid */}
-      <div className="dotted-grid absolute inset-0" />
+      <DotGrid />
 
       {/* Fractal-noise grain overlay */}
       <svg

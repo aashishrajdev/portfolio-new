@@ -7,7 +7,7 @@ import {
   useScroll,
   useTransform,
   type MotionValue,
-} from "framer-motion";
+} from "motion/react";
 import { FiArrowUpRight, FiGithub, FiExternalLink } from "react-icons/fi";
 
 import { Section } from "@/components/ui/section";
@@ -75,7 +75,7 @@ const FLAGSHIPS: Flagship[] = [
     year: "2025",
     kind: "Civic reporting platform",
     problem:
-      "Civic issues — broken lights, potholes, unsafe spots — get reported into the void. Without a structured pipeline from sighting to resolution, reports pile up with no owner, no status, and no feedback loop back to the people who filed them.",
+      "Civic issues like broken lights, potholes and unsafe spots get reported into the void. Without a structured pipeline from sighting to resolution, reports pile up with no owner, no status, and no feedback loop back to the people who filed them.",
     architecture:
       "A full-stack pipeline takes a geotagged report, persists it, and moves it through a lifecycle of states. A REST API backs the submission and status surfaces; the data model keeps each report auditable from first sighting to closed, so nothing silently disappears.",
     flow: [
@@ -147,7 +147,7 @@ const TIERS: Tier[] = [
       {
         title: "FastAPI MCP Server",
         description:
-          "A Python FastAPI server exposing gRPC / protobuf tools for live backend querying — built so an agent can interrogate production data through a typed interface.",
+          "A Python FastAPI server exposing gRPC / protobuf tools for live backend querying, built so an agent can interrogate production data through a typed interface.",
         tech: ["Python", "FastAPI", "gRPC", "protobuf"],
         repoUrl: "#",
         year: "2026",
@@ -176,10 +176,10 @@ const TIERS: Tier[] = [
         year: "2025",
       },
       {
-        title: "Portfolio — Uptime",
+        title: "Portfolio: Uptime",
         description:
-          "This site: a portfolio reframed as an observable system — status panels, a command palette, scroll-spy rail, and a live IST clock.",
-        tech: ["Next.js", "Tailwind", "framer-motion"],
+          "This site: a portfolio reframed as an observable system: status panels, a command palette, scroll-spy rail, and a live IST clock.",
+        tech: ["Next.js", "Tailwind", "motion"],
         repoUrl: "https://github.com/aashishrajdev",
         year: "2026",
       },
@@ -193,7 +193,7 @@ const TIERS: Tier[] = [
       {
         title: "Learnod V1",
         description:
-          "The first iteration of the learning platform — the groundwork that the V2 rebuild refined into structured paths and progress tracking.",
+          "The first iteration of the learning platform, the groundwork that the V2 rebuild refined into structured paths and progress tracking.",
         tech: ["Full-Stack", "JavaScript"],
         repoUrl: "#",
         year: "2023",
@@ -201,7 +201,7 @@ const TIERS: Tier[] = [
       {
         title: "Assorted experiments",
         description:
-          "Smaller tools, hackathon builds, and exploratory repos — kept around as a record of things tried and learned from.",
+          "Smaller tools, hackathon builds, and exploratory repos, kept around as a record of things tried and learned from.",
         tech: ["Various"],
         repoUrl: "https://github.com/aashishrajdev",
       },
@@ -392,7 +392,7 @@ function Flagship({ item }: { item: Flagship }) {
           </div>
           <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
             {item.outcomes.map((o) => (
-              <div key={o.label} className="bg-surface p-4">
+              <div key={o.label} className="frosted p-4">
                 <dt className="font-mono text-base text-foreground tabular-nums">
                   {o.metric}
                 </dt>
@@ -484,7 +484,7 @@ export default function Projects() {
       }
     >
       <p className="-mt-6 mb-16 max-w-2xl text-base leading-relaxed text-muted-foreground sm:text-lg md:-mt-8 md:mb-24">
-        flagship builds, traced end to end — the problem, the shape of the
+        flagship builds, traced end to end: the problem, the shape of the
         system, the stack, and what it actually does in production.
       </p>
 

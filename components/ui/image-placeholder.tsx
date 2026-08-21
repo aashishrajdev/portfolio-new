@@ -21,7 +21,7 @@ export function ImagePlaceholder({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-center overflow-hidden rounded-2xl border border-border bg-surface",
+        "frosted flex w-full items-center justify-center overflow-hidden rounded-2xl border border-border",
         aspect,
         className
       )}

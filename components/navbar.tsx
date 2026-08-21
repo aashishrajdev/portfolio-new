@@ -72,10 +72,15 @@ export function Navbar() {
               type="button"
               onClick={goTop}
               className="group flex items-baseline gap-2 rounded-sm px-1 py-0.5 text-foreground focus-visible:outline-none"
-              aria-label="Aashish Raj — back to top"
+              aria-label="Aashish Raj, back to top"
             >
-              <span className="font-mono text-xs font-medium uppercase tracking-[0.2em]">
-                aashish raj
+              {/* "Aa" inherits the foreground, so it flips with the theme;
+                  the full name stays available to screen readers. */}
+              <span className="font-serif text-xl leading-none tracking-tight">
+                Aa
+                <span className="text-dot" aria-hidden="true">
+                  .
+                </span>
               </span>
             </button>
           </Magnetic>

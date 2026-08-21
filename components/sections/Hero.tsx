@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { motion, useReducedMotion, type Variants } from "framer-motion";
+import { motion, useReducedMotion, type Variants } from "motion/react";
 import { FiArrowUpRight, FiGithub } from "react-icons/fi";
 
 import { Section } from "@/components/ui/section";
@@ -19,8 +19,8 @@ import type {
   ContribResponse,
 } from "@/app/api/github/route";
 
-/** Oversized Instrument-Serif word that blur-reveals char-by-char on load. */
-const KINETIC_WORD = "reliable";
+/** Oversized display word that blur-reveals char-by-char on load. */
+const KINETIC_WORD = "aashish";
 
 /* ---------------------------------------------------------------------------
    Commit signal panel — the hero's right column. Live GitHub contribution
@@ -36,8 +36,9 @@ const LEVEL_CLASS: Record<ContribLevel, string> = {
   4: "bg-foreground",
 };
 
-/** Weeks shown in the hero graph — half a year fits the column w/o scroll. */
-const HERO_WEEKS = 26;
+/** Weeks shown in the hero graph — the full trailing year the API returns.
+    Columns flex, so 53 of them fit the panel width without scrolling. */
+const HERO_WEEKS = 53;
 
 function computeStats(days: ContribDay[]) {
   let best = 0;
@@ -83,7 +84,7 @@ function HeroCommitSignal() {
   }, [days]);
 
   return (
-    <div className="rounded-md border border-border p-5">
+    <div className="frosted rounded-md border border-border p-5">
       {/* Header */}
       <div className="flex items-baseline justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         <span className="inline-flex items-center gap-2">
@@ -96,13 +97,13 @@ function HeroCommitSignal() {
         </span>
       </div>
 
-      {/* Graph — trailing 6 months, grayscale */}
-      <div className="mt-5 flex justify-between gap-1" aria-hidden={days.length === 0}>
+      {/* Graph — trailing 12 months, grayscale */}
+      <div className="mt-5 flex gap-[2px]" aria-hidden={days.length === 0}>
         {(weeks.length > 0
           ? weeks
           : Array.from({ length: HERO_WEEKS }, () => [] as ContribDay[])
         ).map((week, w) => (
-          <div key={w} className="flex flex-col gap-1">
+          <div key={w} className="flex min-w-0 flex-1 flex-col gap-[2px]">
             {Array.from({ length: 7 }).map((_, d) => {
               const day = week[d];
               return (
@@ -114,7 +115,7 @@ function HeroCommitSignal() {
                       : undefined
                   }
                   className={cn(
-                    "h-2.5 w-2.5 rounded-xs",
+                    "aspect-square w-full rounded-xs",
                     day ? LEVEL_CLASS[day.level] : "bg-foreground/8",
                   )}
                 />
@@ -124,12 +125,12 @@ function HeroCommitSignal() {
         ))}
       </div>
       <p className="mt-2 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/60">
-        last 6 months
+        last 12 months
       </p>
 
       {/* Computed stats — fills the column with real telemetry */}
       <dl className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-md border border-border bg-border">
-        <div className="bg-surface px-3 py-3.5">
+        <div className="frosted px-3 py-3.5">
           <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             active days
           </dt>
@@ -137,7 +138,7 @@ function HeroCommitSignal() {
             <Counter value={active} />
           </dd>
         </div>
-        <div className="bg-surface px-3 py-3.5">
+        <div className="frosted px-3 py-3.5">
           <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             best streak
           </dt>
@@ -145,7 +146,7 @@ function HeroCommitSignal() {
             <Counter value={best} suffix="d" />
           </dd>
         </div>
-        <div className="bg-surface px-3 py-3.5">
+        <div className="frosted px-3 py-3.5">
           <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             since
           </dt>
@@ -214,16 +215,7 @@ export default function Hero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
             className="mb-6 flex items-center gap-3"
-          >
-            <span className="font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground tabular-nums">
-              00 / hero
-            </span>
-            <span className="h-px w-8 bg-border" aria-hidden />
-            <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
-              <StatusDot size="sm" label="operational" />
-              available for work
-            </span>
-          </motion.div>
+          ></motion.div>
 
           <motion.p
             initial={{ opacity: 0, y: rise(12) }}
@@ -234,31 +226,14 @@ export default function Hero() {
             Hi, I&apos;m
           </motion.p>
 
+          {/* Kinetic display word — the page's single h1. The visible text is
+              lowercase, so the accessible name carries the full name. */}
           <motion.h1
-            initial={{ opacity: 0, y: rise(12) }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.05, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-1 text-4xl font-medium leading-[1.05] text-foreground sm:text-5xl"
-          >
-            Aashish Raj
-          </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0, y: rise(12) }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-3 font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground"
-          >
-            Backend Developer · Full-Stack · learning AI
-          </motion.p>
-
-          {/* Kinetic serif word */}
-          <motion.div
             variants={container}
             initial="hidden"
             animate="visible"
-            aria-label={`I build ${KINETIC_WORD} systems`}
-            className="mt-8 font-serif text-[clamp(2.75rem,14vw,8rem)] italic leading-[0.95] text-foreground"
+            aria-label="Aashish Raj"
+            className="mt-2 font-serif text-[clamp(2.75rem,14vw,8rem)] italic leading-[0.95] text-foreground"
           >
             <span aria-hidden className="inline-flex flex-wrap">
               {KINETIC_WORD.split("").map((c, i) => (
@@ -271,16 +246,15 @@ export default function Hero() {
                 </motion.span>
               ))}
             </span>
-          </motion.div>
+          </motion.h1>
 
           <motion.p
             initial={{ opacity: 0, y: rise(12) }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="mt-6 max-w-md text-base leading-relaxed text-muted-foreground"
+            className="mt-5 font-mono text-sm uppercase tracking-[0.18em] text-muted-foreground"
           >
-            I build clean interfaces and reliable systems - from the pixel to
-            the pipeline.
+            backend · fullstack · learning ai
           </motion.p>
 
           {/* CTAs */}

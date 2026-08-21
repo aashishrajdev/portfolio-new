@@ -11,7 +11,7 @@ import {
   FiTwitter,
 } from "react-icons/fi";
 import type { IconType } from "react-icons";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
@@ -114,7 +114,7 @@ export default function Contact() {
     event.preventDefault();
     if (sent) return;
 
-    const subject = `ping — ${name.trim() || "request"} via portfolio`;
+    const subject = `ping: ${name.trim() || "request"} via portfolio`;
     const body = `name: ${name}\nemail: ${email}\n\n${message}`;
     const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
       subject
@@ -125,7 +125,7 @@ export default function Contact() {
     }
 
     setSent(true);
-    toast.success("200 OK — request composed", {
+    toast.success("200 OK, request composed", {
       description: "your mail client is opening the draft.",
     });
   }
@@ -136,7 +136,7 @@ export default function Contact() {
         index="06"
         eyebrow="ping"
         heading="open a connection"
-        description="have a role, a system worth building, or a problem worth solving? send a request — i read every one and respond fast."
+        description="have a role, a system worth building, or a problem worth solving? send a request. i read every one and respond fast."
       />
 
       <div className="mt-8 grid grid-cols-1 gap-6 md:mt-10 lg:grid-cols-5">

@@ -31,21 +31,21 @@ const REPOS: RepoCard[] = [
   {
     name: "aashishrajdev/syncsy",
     description:
-      "real-time collaboration engine — conflict-free multi-user sync over websockets, postgres + prisma.",
+      "real-time collaboration engine: conflict-free multi-user sync over websockets, postgres + prisma.",
     url: PROFILE,
     language: "TypeScript",
   },
   {
     name: "aashishrajdev/urbaneyes",
     description:
-      "civic reporting platform — geotagged issue intake, a status pipeline and an admin triage dashboard.",
+      "civic reporting platform: geotagged issue intake, a status pipeline and an admin triage dashboard.",
     url: PROFILE,
     language: "JavaScript",
   },
   {
     name: "aashishrajdev/learnod-v2",
     description:
-      "learning platform v2 — course catalog, progress tracking and a content authoring workflow.",
+      "learning platform v2: course catalog, progress tracking and a content authoring workflow.",
     url: PROFILE,
     language: "TypeScript",
   },
@@ -113,7 +113,7 @@ export default function OpenSource() {
         index="04"
         eyebrow="open source"
         heading="working in the open"
-        description="public repositories — the parts of the system anyone can read, fork, and audit."
+        description="public repositories: the parts of the system anyone can read, fork, and audit."
       />
 
       {/* Status register strip — reads as a dashboard summary line */}

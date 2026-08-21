@@ -145,7 +145,7 @@ export function Rail() {
                 type="button"
                 onClick={() => go(section.id)}
                 aria-current={isActive ? "true" : undefined}
-                aria-label={`${section.label} — press ${section.hotkey}`}
+                aria-label={`${section.label}, press ${section.hotkey}`}
                 title={`${section.label} (${section.hotkey})`}
                 className={cn(
                   "group flex w-full items-center gap-3 rounded-md py-1 font-mono text-[11px] leading-none tracking-tight transition-colors",

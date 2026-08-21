@@ -8,7 +8,7 @@ import {
   type PointerEvent as ReactPointerEvent,
   type ReactNode,
 } from "react";
-import { motion, useReducedMotion, useSpring } from "framer-motion";
+import { motion, useReducedMotion, useSpring } from "motion/react";
 import { cn } from "@/lib/utils";
 
 /** Concrete motion tags we allow, mirroring Reveal's render strategy. */
@@ -52,7 +52,7 @@ function isMotionTag(as?: ElementType): as is MotionTag {
 
 /**
  * Wraps children and translates them toward the pointer while hovered, using a
- * framer-motion spring, resetting to origin on leave.
+ * motion spring, resetting to origin on leave.
  *
  * Renders a plain (non-magnetic) element under `prefers-reduced-motion`, on
  * touch / coarse-pointer devices, or before hydration — so there's never a

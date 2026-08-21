@@ -36,7 +36,7 @@ const DEPLOYS: DeployEntry[] = [
     period: "2026.02 → present",
     current: true,
     summary:
-      "joined as an intern in feb 2026, backend developer since jul 2026 — owning backend tooling and internal services, from production bugfixes to a live querying service.",
+      "joined as an intern in feb 2026, backend developer since jul 2026, owning backend tooling and internal services, from production bugfixes to a live querying service.",
     metrics: [
       { value: 5, suffix: "+", label: "prod bugs resolved" },
       { value: 8, suffix: "+", label: "reusable components" },
@@ -51,7 +51,7 @@ const DEPLOYS: DeployEntry[] = [
   },
   {
     ref: "7b3e081",
-    role: "Frontend Developer",
+    role: "Software Developer Intern",
     company: "Spinach (pre-launch)",
     location: "Remote",
     period: "2025.05 → 2025.10",
@@ -111,7 +111,7 @@ export default function Experience() {
       <SectionHeading
         eyebrow="changelog"
         heading="where the work shipped"
-        description="A reverse-chronological log of roles — read it like a deploy history: timestamp, summary, and the measurable change each one left behind."
+        description="A reverse-chronological log of roles. Read it like a deploy history: timestamp, summary, and the measurable change each one left behind."
       />
 
       <ol className="relative mt-8 md:mt-10">

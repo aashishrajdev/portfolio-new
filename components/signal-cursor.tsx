@@ -3,9 +3,23 @@
 import { useEffect, useRef, useSyncExternalStore } from "react";
 import { useUI } from "@/components/providers/lenis-provider";
 
-/** Subscribe that never fires — we only need the mount-time client snapshot. */
-function noopSubscribe() {
-  return () => {};
+/** Below this width the mobile layout takes over and the reticle is dropped.
+    Matches Tailwind's `md` breakpoint. */
+const MIN_WIDTH = 768;
+
+/** Re-check eligibility whenever the viewport or the input device changes, so
+    resizing a desktop window into the mobile layout drops the reticle too. */
+function subscribeEligibility(onChange: () => void) {
+  const queries = [
+    window.matchMedia("(prefers-reduced-motion: reduce)"),
+    window.matchMedia("(pointer: coarse)"),
+  ];
+  queries.forEach((q) => q.addEventListener("change", onChange));
+  window.addEventListener("resize", onChange);
+  return () => {
+    queries.forEach((q) => q.removeEventListener("change", onChange));
+    window.removeEventListener("resize", onChange);
+  };
 }
 
 /** Lerp factor for the trailing reticle — lower = more lag/spring feel. */
@@ -17,13 +31,14 @@ const DOT = 6; // px — precise center dot
 const INTERACTIVE =
   'a, button, [role="button"], input, textarea, select, label, summary, [data-cursor]';
 
-/** True only for fine-pointer, non-touch, motion-allowing devices. */
+/** True only on fine-pointer, non-touch, motion-allowing, desktop-width devices. */
 function supportsSignalCursor(): boolean {
   if (typeof window === "undefined") return false;
   const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   const coarse = window.matchMedia("(pointer: coarse)").matches;
   const touch = "ontouchstart" in window || navigator.maxTouchPoints > 0;
-  return !reduced && !coarse && !touch;
+  const narrow = window.innerWidth < MIN_WIDTH;
+  return !reduced && !coarse && !touch && !narrow;
 }
 
 /**
@@ -33,7 +48,8 @@ function supportsSignalCursor(): boolean {
  * contracts on press.
  *
  * Renders nothing (native cursor stays) when toggled off via ⌘K, on
- * touch/coarse-pointer devices, or under `prefers-reduced-motion`.
+ * touch/coarse-pointer devices, on the mobile layout, or under
+ * `prefers-reduced-motion`.
  */
 export function SignalCursor() {
   const { cursorEnabled } = useUI();
@@ -41,7 +57,7 @@ export function SignalCursor() {
   const ringRef = useRef<HTMLDivElement | null>(null);
 
   const supported = useSyncExternalStore(
-    noopSubscribe,
+    subscribeEligibility,
     supportsSignalCursor,
     () => false,
   );
