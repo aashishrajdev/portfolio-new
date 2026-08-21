@@ -1,0 +1,151 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import NumberFlow, { type Format } from "@number-flow/react";
+import {
+  FiGithub,
+  FiLinkedin,
+  FiMail,
+  FiTwitter,
+  FiCode,
+} from "react-icons/fi";
+import type { IconType } from "react-icons";
+import { cn } from "@/lib/utils";
+
+type Social = { label: string; href: string; icon: IconType };
+
+const SOCIALS: Social[] = [
+  { label: "GitHub", href: "https://github.com/aashishrajdev", icon: FiGithub },
+  {
+    label: "LinkedIn",
+    href: "https://www.linkedin.com/in/aashishraj-dev/",
+    icon: FiLinkedin,
+  },
+  { label: "Twitter", href: "#", icon: FiTwitter },
+  { label: "Email", href: "mailto:rajaashish.dev@gmail.com", icon: FiMail },
+];
+
+/** Returns IST (UTC+5:30) hours/minutes/seconds, recomputed each tick. */
+function getISTParts(): { h: number; m: number; s: number } {
+  const now = new Date();
+  // IST = UTC + 5h30m. Derive from UTC epoch to be timezone-agnostic.
+  const istMs = now.getTime() + 5.5 * 60 * 60 * 1000;
+  const ist = new Date(istMs);
+  return {
+    h: ist.getUTCHours(),
+    m: ist.getUTCMinutes(),
+    s: ist.getUTCSeconds(),
+  };
+}
+
+/** Two-digit format spec consumed by NumberFlow. */
+const PAD2: Format = { minimumIntegerDigits: 2 };
+
+/**
+ * Live IST timestamp rendered in mono with jitter-free tabular numerals via
+ * NumberFlow. Renders nothing until mounted so SSR and client markup agree.
+ */
+function LiveClock() {
+  const [mounted, setMounted] = useState(false);
+  const [{ h, m, s }, setTime] = useState(() => getISTParts());
+
+  useEffect(() => {
+    const raf = requestAnimationFrame(() => {
+      setMounted(true);
+      setTime(getISTParts());
+    });
+    const id = setInterval(() => setTime(getISTParts()), 1000);
+    return () => {
+      cancelAnimationFrame(raf);
+      clearInterval(id);
+    };
+  }, []);
+
+  return (
+    <span
+      className="tabular-nums inline-flex items-center font-mono text-xs text-foreground"
+      aria-label="Current time in IST"
+    >
+      {mounted ? (
+        <>
+          <NumberFlow value={h} format={PAD2} />
+          <span aria-hidden>:</span>
+          <NumberFlow value={m} format={PAD2} />
+          <span aria-hidden>:</span>
+          <NumberFlow value={s} format={PAD2} />
+        </>
+      ) : (
+        <span>--:--:--</span>
+      )}
+      <span className="ml-1.5 text-muted-foreground">IST</span>
+    </span>
+  );
+}
+
+/** Subtle vertical hairline used to separate meta items on wide screens. */
+function MetaSep() {
+  return (
+    <span aria-hidden className="hidden h-3 w-px bg-border sm:inline-block" />
+  );
+}
+
+/**
+ * Signature strip footer for the "Uptime" portfolio.
+ *
+ * Left: wordmark + copyright, a live IST timestamp, and the build credit.
+ * Right: monochrome social links + a "view source" link.
+ */
+export function Footer() {
+  return (
+    <footer className="border-t border-border">
+      <div className="mx-auto flex max-w-5xl flex-col gap-6 px-6 py-8 md:flex-row md:items-center md:justify-between md:gap-4">
+        {/* Left — signature + live signal */}
+        <div className="flex flex-col gap-3 font-mono text-xs text-muted-foreground sm:flex-row sm:flex-wrap sm:items-center sm:gap-3">
+          <span className="flex items-center gap-3">
+            <span className="text-foreground">aashish raj</span>
+            <span className="text-muted-foreground">© 2026</span>
+          </span>
+          <MetaSep />
+          <LiveClock />
+          <MetaSep />
+          <span>built with next.js + tailwind</span>
+        </div>
+
+        {/* Right — socials + view source */}
+        <div className="flex items-center gap-2">
+          {SOCIALS.map(({ label, href, icon: Icon }) => {
+            const external = href.startsWith("http");
+            return (
+              <a
+                key={label}
+                href={href}
+                aria-label={label}
+                {...(external
+                  ? { target: "_blank", rel: "noopener noreferrer" }
+                  : {})}
+                className={cn(
+                  "inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground",
+                  "transition-colors hover:border-foreground/30 hover:text-foreground",
+                )}
+              >
+                <Icon className="h-4 w-4" aria-hidden />
+              </a>
+            );
+          })}
+
+          <a
+            href="#"
+            className={cn(
+              "ml-1 inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5",
+              "font-mono text-xs text-muted-foreground",
+              "transition-colors hover:border-foreground/30 hover:text-foreground",
+            )}
+          >
+            <FiCode className="h-3.5 w-3.5" aria-hidden />
+            view source
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}

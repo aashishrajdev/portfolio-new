@@ -1,265 +1,152 @@
 @import "tailwindcss";
-@import "./components/tw-animate.css";
 
 @custom-variant dark (&:is(.dark *));
 
-/* Native CSS smooth page transitions (cross-document) */
-@view-transition {
-  navigation: auto;
-}
-
-::view-transition-group(*) {
-  animation-duration: 0.3s;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-}
-
+/* ---------------------------------------------------------------------------
+   Theme tokens — CSS vars mapped to Tailwind color utilities via @theme inline.
+   Available utilities:
+     bg-background      text-foreground
+     bg-surface         bg-surface-2
+     border-border      text-muted-foreground
+     text-signal / bg-signal / border-signal
+   Fonts: font-sans (Geist), font-serif (Instrument Serif), font-mono (Geist Mono)
+--------------------------------------------------------------------------- */
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-playfair);
-  --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-playfair);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
   --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
   --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) - 4px);
-  --radius-md: calc(var(--radius) - 2px);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) + 4px);
-  --radius-2xl: calc(var(--radius) + 8px);
-  --radius-3xl: calc(var(--radius) + 12px);
-  --radius-4xl: calc(var(--radius) + 16px);
+  --color-signal: var(--signal);
+
+  --radius: var(--radius);
+
+  --font-sans: var(--font-geist-sans);
+  --font-serif: var(--font-serif);
+  --font-mono: var(--font-geist-mono);
 }
 
+/* Dark is the default theme (true black). */
 :root {
-  --fluid-page-padding-y: clamp(5rem, 4vw + 2rem, 8rem);
-  --fluid-page-gap-xs: clamp(0.5rem, 0.35vw + 0.35rem, 0.875rem);
-  --fluid-page-gap-sm: clamp(0.875rem, 0.7vw + 0.5rem, 1.25rem);
-  --fluid-page-gap-md: clamp(1.25rem, 1vw + 0.75rem, 1.75rem);
-  --fluid-page-gap-lg: clamp(1.75rem, 1.4vw + 1rem, 2.5rem);
-  --fluid-shell-max: clamp(72rem, 88vw, 92rem);
-  --fluid-fs-copy-xs: clamp(0.68rem, 0.15vw + 0.62rem, 0.78rem);
-  --fluid-fs-copy-sm: clamp(0.82rem, 0.22vw + 0.74rem, 0.98rem);
-  --fluid-fs-copy-base: clamp(0.94rem, 0.28vw + 0.86rem, 1.08rem);
-  --fluid-fs-copy-lg: clamp(1.06rem, 0.34vw + 0.95rem, 1.25rem);
-  --fluid-fs-compact: clamp(1.15rem, 0.55vw + 1rem, 1.65rem);
-  --fluid-fs-title: clamp(2.5rem, 4vw + 1rem, 4.8rem);
-  --fluid-fs-hero: clamp(3rem, 5.5vw + 1rem, 6.5rem);
+  --background: #000000;
+  --foreground: #ffffff;
+  --surface: #0a0a0b;
+  --surface-2: #0f0f11;
+  --border: #1c1c1f;
+  --muted-foreground: #71717a;
+  --signal: #34d399;
+  --radius: 1rem;
 }
 
-.fluid-shell {
-  max-width: var(--fluid-shell-max);
+/* Light theme override (applied when <html> has the .light class). */
+.light {
+  --background: #ffffff;
+  --foreground: #0a0a0a;
+  --surface: #f7f7f8;
+  --surface-2: #f1f1f3;
+  --border: #e4e4e7;
+  --muted-foreground: #71717a;
+  /* signal stays the same green in light mode */
+  --signal: #34d399;
 }
 
-.fluid-page-pad-y {
-  padding-top: var(--fluid-page-padding-y);
-  padding-bottom: var(--fluid-page-padding-y);
-}
-
-.fluid-fs-copy-xs {
-  font-size: var(--fluid-fs-copy-xs);
-}
-
-.fluid-fs-copy-sm {
-  font-size: var(--fluid-fs-copy-sm);
-}
-
-.fluid-fs-copy-base {
-  font-size: var(--fluid-fs-copy-base);
-}
-
-.fluid-fs-copy-lg {
-  font-size: var(--fluid-fs-copy-lg);
-}
-
-.fluid-fs-compact {
-  font-size: var(--fluid-fs-compact);
-}
-
-.fluid-fs-title {
-  font-size: var(--fluid-fs-title);
-}
-
-.fluid-fs-hero {
-  font-size: var(--fluid-fs-hero);
-}
-
-/* Home: viewport-fit name — scales by BOTH width and height so it
-   always fits one screen, never clipped, never scrolls. */
-.home-name {
-  font-size: min(11vw, 15vh);
-}
-
-/* 2.5D tilt card (Works) */
-.tilt {
-  transform-style: preserve-3d;
-  transition:
-    transform 0.18s ease,
-    background-color 0.3s ease;
-  will-change: transform;
-}
-
-::view-transition-old(root),
-::view-transition-new(root) {
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-::view-transition-new(root) {
-  z-index: 1;
-}
-::view-transition-old(root) {
-  z-index: 1;
-}
-
-.dark::view-transition-old(root) {
-  z-index: 2;
-}
-.dark::view-transition-new(root) {
-  z-index: 1;
-}
-
-:root:not(.dark)::view-transition-new(root) {
-  z-index: 2;
-}
-:root:not(.dark)::view-transition-old(root) {
-  z-index: 1;
-}
-
-:root {
-  --radius: 0.625rem;
-  --background: oklch(1 0 0);
-  --foreground: oklch(0.145 0 0);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0 0);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.205 0 0);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.97 0 0);
-  --secondary-foreground: oklch(0.205 0 0);
-  --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
-  --accent: oklch(0.97 0 0);
-  --accent-foreground: oklch(0.205 0 0);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.922 0 0);
-  --input: oklch(0.922 0 0);
-  --ring: oklch(0.708 0 0);
-  --chart-1: oklch(0.646 0.222 41.116);
-  --chart-2: oklch(0.6 0.118 184.704);
-  --chart-3: oklch(0.398 0.07 227.392);
-  --chart-4: oklch(0.828 0.189 84.429);
-  --chart-5: oklch(0.769 0.188 70.08);
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
-}
-
-.dark {
-  --background: oklch(0.35 0 0);
-  --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
-  --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
-  --popover-foreground: oklch(0.985 0 0);
-  --primary: oklch(0.922 0 0);
-  --primary-foreground: oklch(0.205 0 0);
-  --secondary: oklch(0.269 0 0);
-  --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
-  --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.269 0 0);
-  --accent-foreground: oklch(0.985 0 0);
-  --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.556 0 0);
-  --chart-1: oklch(0.488 0.243 264.376);
-  --chart-2: oklch(0.696 0.17 162.48);
-  --chart-3: oklch(0.769 0.188 70.08);
-  --chart-4: oklch(0.627 0.265 303.9);
-  --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
-  --sidebar-primary: oklch(0.488 0.243 264.376);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
-  --sidebar-ring: oklch(0.556 0 0);
-}
-
-/* Text selection styles */
-::selection {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
-}
-
-::-moz-selection {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
-}
-
-.dark ::selection {
-  background-color: #1d4ed8 !important;
-  color: #ffffff !important;
-}
-
-.dark ::-moz-selection {
-  background-color: #1d4ed8 !important;
-  color: #ffffff !important;
-}
-
-/* Hide scrollbar globally */
-html,
-body {
-  -ms-overflow-style: none !important; /* IE and Edge */
-}
-html::-webkit-scrollbar,
-body::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  display: none !important; /* Chrome, Safari, Opera */
-  width: 0 !important;
-  height: 0 !important;
+html {
+  /* Lenis manages smooth scroll at runtime; this is a graceful fallback. */
+  scroll-behavior: smooth;
 }
 
 @layer base {
-  * {
-    @apply border-border outline-ring/50;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground antialiased;
+    font-family: var(--font-sans), system-ui, sans-serif;
+  }
+
+  /* Signal-tinted selection. */
+  ::selection {
+    background-color: color-mix(in oklab, var(--signal) 10%, transparent);
+    color: var(--foreground);
+  }
+
+  /* Signal focus ring for keyboard navigation. */
+  :focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--background), 0 0 0 4px var(--signal);
+    border-radius: 4px;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Utilities
+--------------------------------------------------------------------------- */
+
+/* Tabular figures helper for metrics, clocks, indices. */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+}
+
+/* Dashboard/terminal module surface — reads as UI, not a marketing card. */
+.panel {
+  border-radius: 0.375rem; /* rounded-md / 6px */
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+}
+
+/* Fixed dotted-grid texture (1px dots, ~24px pitch, ~4% opacity). */
+.dotted-grid {
+  background-image: radial-gradient(
+    color-mix(in oklab, var(--foreground) 4%, transparent) 1px,
+    transparent 1px
+  );
+  background-size: 24px 24px;
+  background-position: 0 0;
+}
+
+/* Custom "signal" reticle cursor — hide the native pointer while active,
+   but keep a real text caret inside form fields for usability. Toggled by
+   the SignalCursor component (off on touch / reduced-motion / via ⌘K). */
+html.signal-cursor-active,
+html.signal-cursor-active * {
+  cursor: none;
+}
+html.signal-cursor-active
+  :where(input, textarea, select, [contenteditable="true"]) {
+  cursor: text;
+}
+
+/* Hide scrollbar but keep scrollability (e.g. the contribution heatmap). */
+.no-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+/* ---------------------------------------------------------------------------
+   Marquee — infinitely-scrolling event-log / logo strip.
+   Track duplicates its content; translateX(-50%) loops seamlessly.
+--------------------------------------------------------------------------- */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .animate-marquee {
+    animation: none;
   }
 }

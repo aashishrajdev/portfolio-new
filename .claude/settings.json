@@ -1,13 +1,31 @@
 {
   "permissions": {
     "allow": [
+      "Bash(npm install *)",
       "Bash(npx tsc *)",
-      "Bash(npm run *)",
-      "Bash(git mv *)",
-      "Bash(sed -i 's#\"\\\\.\\\\./components/#\"../#g; s#\"\\\\.\\\\./content/#\"../../content/#g; s#\"\\\\.\\\\./utils/#\"../../utils/#g; s#\"\\\\.\\\\./context/#\"../../context/#g' AboutSection.tsx ContactSection.tsx ProjectsSection.tsx WorksSection.tsx)",
-      "Bash(sed -i 's#\"\\\\./components/#\"../#g; s#\"\\\\./utils/#\"../../utils/#g' HomeSection.tsx)",
-      "Bash(grep -rn \"from \\\\\"\\\\.\\\\./\\\\.\\\\?\\\\.\\\\?/\\\\?\" *.tsx)",
-      "Bash(git rm *)"
+      "PowerShell(npx tsc --noEmit 2>&1)",
+      "PowerShell(npx tsc --noEmit)",
+      "Bash(echo \"tsc done with exit $?\")",
+      "Bash(node -e ' *)",
+      "Bash(echo \"EXIT: $?\")",
+      "Bash(node -e \"const fi=require\\('react-icons/fi'\\); ['FiRefreshCw','FiCpu','FiTerminal','FiLayers','FiCode'].forEach\\(n=>console.log\\(n, typeof fi[n]\\)\\);\")",
+      "PowerShell(npm run build 2>&1)",
+      "PowerShell(npm run lint 2>&1)",
+      "WebFetch(domain:chanhdai.com)",
+      "WebSearch",
+      "WebFetch(domain:ramx.in)",
+      "WebFetch(domain:www.srbh.site)",
+      "WebFetch(domain:gxuri.in)",
+      "WebFetch(domain:www.samitkapoor.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:portfolio.ramx.in)",
+      "WebFetch(domain:dev.gxuri.in)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:peerlist.io)",
+      "WebFetch(domain:stackbits.dev)",
+      "WebFetch(domain:skiper-ui.com)",
+      "Bash(node -e \"const fi = require\\('react-icons/fi'\\); console.log\\('FiArrowUpRight', typeof fi.FiArrowUpRight\\); console.log\\('FiGithub', typeof fi.FiGithub\\); console.log\\('FiExternalLink', typeof fi.FiExternalLink\\);\")",
+      "Bash(npm run *)"
     ]
   }
 }
