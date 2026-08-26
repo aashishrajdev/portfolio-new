@@ -20,9 +20,9 @@ import { Counter } from "@/components/ui/counter";
  * status line, and the language it runs on. Server component — renders
  * client primitives (Reveal, Counter) but holds no state of its own.
  *
- * Honest by construction: no fabricated star counts or upstream PRs. The
- * live commit signal lives in the GitHub section above; this is the set of
- * things anyone can read, fork, and audit.
+ * Honest by construction: every count below is real and checkable against the
+ * GitHub API — no fabricated stars. The live commit signal lives in the GitHub
+ * section above; this is the set of things anyone can read, fork, and audit.
  */
 
 const PROFILE = "https://github.com/aashishrajdev";
@@ -32,24 +32,67 @@ const REPOS: RepoCard[] = [
     name: "aashishrajdev/syncsy",
     description:
       "real-time collaboration engine: conflict-free multi-user sync over websockets, postgres + prisma.",
-    url: PROFILE,
+    url: "https://github.com/aashishrajdev/syncsy",
     language: "TypeScript",
   },
   {
     name: "aashishrajdev/urbaneyes",
     description:
       "civic reporting platform: geotagged issue intake, a status pipeline and an admin triage dashboard.",
-    url: PROFILE,
+    url: "https://github.com/aashishrajdev/urbaneyes",
     language: "JavaScript",
   },
+];
+
+/**
+ * Upstream work: pull requests landed in repos owned by someone else (or, for
+ * ZeroAxiis, by the org I co-founded). Counts come from the GitHub search API
+ * for `author:aashishrajdev`, so each row links to the query that proves it.
+ */
+interface Upstream {
+  org: string;
+  repo: string;
+  /** Link to the filtered PR list or the specific PR being cited. */
+  url: string;
+  role: string;
+  detail: string;
+  merged: number;
+  opened: number;
+}
+
+const UPSTREAM: Upstream[] = [
   {
-    name: "aashishrajdev/learnod-v2",
-    description:
-      "learning platform v2: course catalog, progress tracking and a content authoring workflow.",
-    url: PROFILE,
-    language: "TypeScript",
+    org: "ZeroAxiis",
+    repo: "zeroaxiis/*",
+    url: "https://github.com/zeroaxiis",
+    role: "co-founder",
+    detail:
+      "the product site, the Go backend services and the admin console, across the org's repos.",
+    merged: 22,
+    opened: 24,
+  },
+  {
+    org: "OWASP VIT Bhopal",
+    repo: "owasp-vitbhopal-website",
+    url: "https://github.com/OWASPVITBHOPAL/owasp-vitbhopal-website/pulls?q=is%3Apr+author%3Aaashishrajdev",
+    role: "chapter member",
+    detail:
+      "achievements page, hero and layout refactors, and the report-bug form.",
+    merged: 8,
+    opened: 8,
+  },
+  {
+    org: "Open Source Kigali",
+    repo: "docksight",
+    url: "https://github.com/Open-Source-Kigali/docksight/pull/139",
+    role: "contributor",
+    detail: "login attribution fix, closing issue #130.",
+    merged: 1,
+    opened: 1,
   },
 ];
+
+const MERGED_TOTAL = UPSTREAM.reduce((sum, u) => sum + u.merged, 0);
 
 /**
  * One monitored "service": a dashboard module (Panel) with a mono register
@@ -106,6 +149,43 @@ function ServiceModule({ repo, index }: { repo: RepoCard; index: string }) {
   );
 }
 
+/**
+ * One upstream contribution: the org, what the work was, and a merged/opened
+ * tally that links out to the PR list it was counted from.
+ */
+function UpstreamRow({ item }: { item: Upstream }) {
+  return (
+    <li className="flex flex-col gap-3 border-t border-border py-4 sm:flex-row sm:items-baseline sm:gap-6">
+      <div className="min-w-0 flex-1">
+        <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+          <span className="font-mono text-sm text-foreground">{item.org}</span>
+          <Badge>{item.role}</Badge>
+        </div>
+        <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
+          {item.detail}
+        </p>
+      </div>
+
+      <div className="flex shrink-0 items-baseline gap-5 font-mono text-xs text-muted-foreground">
+        <span className="inline-flex items-baseline gap-1.5">
+          <Counter value={item.merged} className="text-base text-foreground" />
+          merged
+        </span>
+        <a
+          href={item.url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-flex items-center gap-1.5 transition-colors hover:text-foreground"
+          aria-label={`Open ${item.org} contributions on GitHub`}
+        >
+          view
+          <FiExternalLink aria-hidden className="h-3.5 w-3.5" />
+        </a>
+      </div>
+    </li>
+  );
+}
+
 export default function OpenSource() {
   return (
     <Section id="open-source">
@@ -113,7 +193,7 @@ export default function OpenSource() {
         index="04"
         eyebrow="open source"
         heading="working in the open"
-        description="public repositories: the parts of the system anyone can read, fork, and audit."
+        description="public repositories and upstream pull requests: the parts of the system anyone can read, fork, and audit."
       />
 
       {/* Status register strip — reads as a dashboard summary line */}
@@ -126,6 +206,10 @@ export default function OpenSource() {
           <span className="inline-flex items-baseline gap-1.5">
             <Counter value={REPOS.length} className="text-base text-foreground" />
             public repos
+          </span>
+          <span className="inline-flex items-baseline gap-1.5">
+            <Counter value={MERGED_TOTAL} className="text-base text-foreground" />
+            merged upstream
           </span>
           <span className="inline-flex items-center gap-1.5">
             <span className="text-foreground">live commit signal above</span>
@@ -144,6 +228,29 @@ export default function OpenSource() {
           </Reveal>
         ))}
       </div>
+
+      {/* Upstream board — PRs landed in repos I do not own */}
+      <Reveal className="mt-4" delay={0.1}>
+        <Panel
+          title={
+            <span className="flex items-center gap-2">
+              <span className="text-foreground tabular-nums">03</span>
+              <span aria-hidden className="text-border">
+                /
+              </span>
+              <span>upstream</span>
+            </span>
+          }
+          status
+          bodyClassName="px-4 pb-2 pt-0"
+        >
+          <ul>
+            {UPSTREAM.map((item) => (
+              <UpstreamRow key={item.org} item={item} />
+            ))}
+          </ul>
+        </Panel>
+      </Reveal>
 
       {/* CTA */}
       <Reveal className="mt-10 flex flex-wrap items-center gap-3" delay={0.12}>
