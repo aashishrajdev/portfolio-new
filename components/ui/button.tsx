@@ -25,11 +25,28 @@ interface ButtonAsButton
 
 type ButtonProps = ButtonAsLink | ButtonAsButton;
 
+/* The 3D read comes from a hard (un-blurred) offset shadow acting as the
+   button's extruded edge: it grows as the button lifts on hover and collapses
+   as the button travels down on press. */
 const variants: Record<Variant, string> = {
-  primary:
+  primary: cn(
     "bg-foreground text-background border border-foreground hover:bg-foreground/90",
-  outline: "border border-border text-foreground hover:bg-surface",
-  ghost: "border border-transparent text-foreground hover:bg-surface",
+    "shadow-[0_4px_0_0_var(--muted-foreground)]",
+    "hover:shadow-[0_6px_0_0_var(--muted-foreground)]",
+    "active:shadow-[0_1px_0_0_var(--muted-foreground)]",
+  ),
+  outline: cn(
+    "border border-border text-foreground hover:bg-surface",
+    "shadow-[0_4px_0_0_var(--border)]",
+    "hover:shadow-[0_6px_0_0_var(--border)]",
+    "active:shadow-[0_1px_0_0_var(--border)]",
+  ),
+  ghost: cn(
+    "border border-transparent text-foreground hover:bg-surface",
+    "shadow-[0_4px_0_0_var(--border)]",
+    "hover:shadow-[0_6px_0_0_var(--border)]",
+    "active:shadow-[0_1px_0_0_var(--border)]",
+  ),
 };
 
 const sizes: Record<Size, string> = {
@@ -39,16 +56,20 @@ const sizes: Record<Size, string> = {
 
 /**
  * Monochrome action. Renders an <a> when `href` is provided, otherwise a
- * <button>. rounded-full, hairline borders, hover surface fill — no glow,
- * no colored shadow. Focus ring is provided globally via :focus-visible.
+ * <button>. rounded-full, hairline borders, hover surface fill, and a hard
+ * offset edge that lifts on hover and presses down on click. Focus ring is
+ * provided globally via :focus-visible.
  */
 export function Button(props: ButtonProps) {
   const { children, className, variant = "primary", size = "md" } = props;
 
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-full font-medium",
-    "transition-colors duration-200",
+    "transition-[transform,box-shadow,background-color,border-color] duration-150 ease-out",
+    "hover:-translate-y-0.5 active:translate-y-0.5",
+    "motion-reduce:transform-none motion-reduce:transition-colors",
     "disabled:pointer-events-none disabled:opacity-50",
+    "disabled:translate-y-0 disabled:shadow-none",
     variants[variant],
     sizes[size],
     className

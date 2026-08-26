@@ -125,13 +125,25 @@ html {
   -webkit-backdrop-filter: blur(14px) saturate(140%);
 }
 
-/* Custom "signal" reticle cursor — hide the native pointer while active,
-   but keep a real text caret inside form fields for usability. Toggled by
-   the SignalCursor component (off on touch / reduced-motion / via ⌘K). */
+/* Custom cursor — a chunky rounded arrow as an SVG data URI. Uses the real
+   `cursor` property rather than a JS-tracked element, so it is drawn by the
+   compositor and never lags. Interactive elements get the same arrow in signal
+   green; form fields keep a real text caret. Toggled by the SignalCursor
+   component (off on touch / mobile widths / reduced-motion / via Ctrl+K). */
 html.signal-cursor-active,
 html.signal-cursor-active * {
-  cursor: none;
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><path d='M7 3.6 L7 21.8 L11.9 17.2 L15.1 24 L18.8 22.2 L15.6 15.6 L22 15.6 Z' fill='%23ffffff' stroke='%23111111' stroke-width='1.7' stroke-linejoin='round' stroke-linecap='round'/></svg>")
+      7 4,
+    auto;
 }
+
+html.signal-cursor-active
+  :where(a, button, [role="button"], label, summary, [data-cursor]) {
+  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><path d='M7 3.6 L7 21.8 L11.9 17.2 L15.1 24 L18.8 22.2 L15.6 15.6 L22 15.6 Z' fill='%2334d399' stroke='%23111111' stroke-width='1.7' stroke-linejoin='round' stroke-linecap='round'/></svg>")
+      7 4,
+    pointer;
+}
+
 html.signal-cursor-active
   :where(input, textarea, select, [contenteditable="true"]) {
   cursor: text;

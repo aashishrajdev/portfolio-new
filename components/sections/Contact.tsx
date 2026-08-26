@@ -18,7 +18,6 @@ import { SectionHeading } from "@/components/ui/section-heading";
 import { Panel } from "@/components/ui/panel";
 import { Reveal } from "@/components/ui/reveal";
 import { StatusDot } from "@/components/ui/status-dot";
-import { Magnetic } from "@/components/ui/magnetic";
 import { cn } from "@/lib/utils";
 
 /* -------------------------------------------------------------------------- */
@@ -207,9 +206,7 @@ export default function Contact() {
               </div>
 
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                <Magnetic as="div" strength={0.25}>
-                  <SubmitButton sent={sent} reduceMotion={reduceMotion} />
-                </Magnetic>
+                <SubmitButton sent={sent} reduceMotion={reduceMotion} />
 
                 <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
                   <StatusDot size="sm" pulse={!sent} label="endpoint status" />

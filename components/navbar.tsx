@@ -4,7 +4,6 @@ import { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Container } from "@/components/ui/container";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { Magnetic } from "@/components/ui/magnetic";
 import { KeyCap } from "@/components/key-cap";
 import { useUI } from "@/components/providers/lenis-provider";
 import { setCommandPaletteOpen } from "@/components/command-palette";
@@ -67,7 +66,7 @@ export function Navbar() {
       <Container>
         <nav className="relative flex h-16 items-center justify-between">
           {/* Wordmark — pinned left with a little breathing room */}
-          <Magnetic as="div" strength={0.25} className="ml-1">
+          <div className="ml-1">
             <button
               type="button"
               onClick={goTop}
@@ -83,14 +82,10 @@ export function Navbar() {
                 </span>
               </span>
             </button>
-          </Magnetic>
+          </div>
 
           {/* Centered search / command palette trigger */}
-          <Magnetic
-            as="div"
-            strength={0.2}
-            className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block"
-          >
+          <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
             <button
               type="button"
               onClick={() => setCommandPaletteOpen(true)}
@@ -103,7 +98,7 @@ export function Navbar() {
               <span>search</span>
               <KeyCap className="text-signal">Ctrl/⌘ + K</KeyCap>
             </button>
-          </Magnetic>
+          </div>
 
           {/* Right cluster */}
           <div className="flex items-center gap-2">

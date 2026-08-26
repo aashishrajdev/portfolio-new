@@ -6,7 +6,6 @@ import { FiArrowUpRight, FiGithub } from "react-icons/fi";
 
 import { Section } from "@/components/ui/section";
 import { Button } from "@/components/ui/button";
-import { Magnetic } from "@/components/ui/magnetic";
 import { Counter } from "@/components/ui/counter";
 import { StatusDot } from "@/components/ui/status-dot";
 import { KeyCap } from "@/components/ui/key-cap";
@@ -264,26 +263,20 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.58, ease: [0.16, 1, 0.3, 1] }}
             className="mt-9 flex flex-wrap items-center gap-3"
           >
-            <Magnetic as="div" strength={0.35}>
-              <Button onClick={() => scrollToId("projects")} variant="primary">
-                View Work
-              </Button>
-            </Magnetic>
-            <Magnetic as="div" strength={0.3}>
-              <Button
-                href="https://github.com/aashishrajdev/Resume"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="outline"
-              >
-                Résumé
-              </Button>
-            </Magnetic>
-            <Magnetic as="div" strength={0.3}>
-              <Button onClick={() => scrollToId("contact")} variant="outline">
-                Contact
-              </Button>
-            </Magnetic>
+            <Button onClick={() => scrollToId("projects")} variant="primary">
+              View Work
+            </Button>
+            <Button
+              href="https://github.com/aashishrajdev/Resume"
+              target="_blank"
+              rel="noopener noreferrer"
+              variant="outline"
+            >
+              Résumé
+            </Button>
+            <Button onClick={() => scrollToId("contact")} variant="outline">
+              Contact
+            </Button>
           </motion.div>
 
           {/* ⌘K hint */}
