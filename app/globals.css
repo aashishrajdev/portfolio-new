@@ -99,13 +99,98 @@ html {
   font-feature-settings: "tnum";
 }
 
+/* ---------------------------------------------------------------------------
+   Glass button.
+
+   The 3D read is built from five stacked layers rather than a single shadow:
+     1. a radial specular highlight arcing over the top edge
+     2. a vertical fill gradient, brighter at the top
+     3. a bright inset rim on the top edge (the lit bevel)
+     4. a dark inset shade on the bottom edge (the bevel in shadow)
+     5. a soft ambient shadow plus a tighter contact shadow underneath
+   Backdrop blur refracts whatever sits behind, so it reads as glass rather
+   than as a flat translucent chip.
+--------------------------------------------------------------------------- */
+.glass-btn {
+  border: 1px solid color-mix(in oklab, var(--foreground) 26%, transparent);
+  background-image: radial-gradient(
+      120% 80% at 50% -25%,
+      color-mix(in oklab, var(--foreground) 42%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 16%, transparent),
+      color-mix(in oklab, var(--foreground) 5%, transparent)
+    );
+  backdrop-filter: blur(10px) saturate(170%);
+  -webkit-backdrop-filter: blur(10px) saturate(170%);
+  box-shadow:
+    0 10px 22px -10px rgb(0 0 0 / 0.55),
+    0 2px 6px -2px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 0 color-mix(in oklab, var(--foreground) 60%, transparent),
+    inset 0 -1px 0 0 rgb(0 0 0 / 0.28),
+    inset 0 0 14px 0 color-mix(in oklab, var(--foreground) 10%, transparent);
+}
+
+/* Lift: the ambient shadow spreads and the top rim brightens. */
+.glass-btn:hover {
+  box-shadow:
+    0 16px 28px -12px rgb(0 0 0 / 0.6),
+    0 3px 8px -2px rgb(0 0 0 / 0.4),
+    inset 0 1px 0 0 color-mix(in oklab, var(--foreground) 75%, transparent),
+    inset 0 -1px 0 0 rgb(0 0 0 / 0.28),
+    inset 0 0 18px 0 color-mix(in oklab, var(--foreground) 16%, transparent);
+}
+
+/* Press: shadows collapse and the bevel inverts, so the glass sinks. */
+.glass-btn:active {
+  box-shadow:
+    0 3px 8px -6px rgb(0 0 0 / 0.5),
+    inset 0 2px 6px 0 rgb(0 0 0 / 0.32),
+    inset 0 -1px 0 0 color-mix(in oklab, var(--foreground) 30%, transparent);
+}
+
+/* Success state: the same glass, rimmed in signal green. */
+.glass-btn-signal {
+  border-color: color-mix(in oklab, var(--signal) 55%, transparent);
+}
+
+/* Primary: the same glass, thicker in the mix so it carries more weight. */
+.glass-btn-strong {
+  border-color: color-mix(in oklab, var(--foreground) 42%, transparent);
+  background-image: radial-gradient(
+      120% 80% at 50% -25%,
+      color-mix(in oklab, var(--foreground) 62%, transparent),
+      transparent 62%
+    ),
+    linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--foreground) 34%, transparent),
+      color-mix(in oklab, var(--foreground) 14%, transparent)
+    );
+}
+
+@supports not (
+  (backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))
+) {
+  .glass-btn {
+    background-color: var(--surface);
+  }
+}
+
 /* Frosted glass surface. A translucent fill over a blurred backdrop, so the
    dot grid behind a card reads as a soft wash instead of showing through
    sharply. Solid fill where backdrop-filter is unsupported. */
 .frosted {
-  background-color: color-mix(in oklab, var(--surface) 82%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+/* Interactive surfaces lift a few percent on hover. */
+.frosted-hover:hover {
+  background-color: color-mix(in oklab, var(--foreground) 14%, transparent);
 }
 
 @supports not (
@@ -120,33 +205,40 @@ html {
 .panel {
   border-radius: 0.375rem; /* rounded-md / 6px */
   border: 1px solid var(--border);
-  background-color: color-mix(in oklab, var(--surface) 82%, transparent);
-  backdrop-filter: blur(14px) saturate(140%);
-  -webkit-backdrop-filter: blur(14px) saturate(140%);
+  background-color: color-mix(in oklab, var(--foreground) 10%, transparent);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-/* Custom cursor — a chunky rounded arrow as an SVG data URI. Uses the real
-   `cursor` property rather than a JS-tracked element, so it is drawn by the
-   compositor and never lags. Interactive elements get the same arrow in signal
-   green; form fields keep a real text caret. Toggled by the SignalCursor
-   component (off on touch / mobile widths / reduced-motion / via Ctrl+K). */
-html.signal-cursor-active,
-html.signal-cursor-active * {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><path d='M7 3.6 L7 21.8 L11.9 17.2 L15.1 24 L18.8 22.2 L15.6 15.6 L22 15.6 Z' fill='%23ffffff' stroke='%23111111' stroke-width='1.7' stroke-linejoin='round' stroke-linecap='round'/></svg>")
-      7 4,
-    auto;
-}
+/* ---------------------------------------------------------------------------
+   Cat cursor.
 
-html.signal-cursor-active
-  :where(a, button, [role="button"], label, summary, [data-cursor]) {
-  cursor: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 28 28'><path d='M7 3.6 L7 21.8 L11.9 17.2 L15.1 24 L18.8 22.2 L15.6 15.6 L22 15.6 Z' fill='%2334d399' stroke='%23111111' stroke-width='1.7' stroke-linejoin='round' stroke-linecap='round'/></svg>")
-      7 4,
-    pointer;
-}
+   An original two-state character cursor: mouth shut at rest, wide open over
+   anything interactive and while the button is held. Drawn as SVG data URIs on
+   the real `cursor` property, so the compositor paints it — no tracked element,
+   nothing to lag or mis-size. Only offered to devices that actually have a
+   pointer; touch gets the platform default. Hotspot sits on the left ear tip so
+   clicks are anchored to a visible point.
+--------------------------------------------------------------------------- */
+@media (hover: hover) and (pointer: fine) {
+  html,
+  html * {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cg%20stroke='%233b2a26'%20stroke-width='1.7'%20stroke-linejoin='round'%3E%3Cpath%20d='M8%2012%20L6.5%204%20L13.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cpath%20d='M24%2012%20L25.5%204%20L18.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cellipse%20cx='16'%20cy='18.5'%20rx='10.6'%20ry='9.2'%20fill='%23fdf6f1'/%3E%3C/g%3E%3Cellipse%20cx='11.8'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Cellipse%20cx='20.2'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Ccircle%20cx='12.35'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Ccircle%20cx='20.75'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Cpath%20d='M16%2019.6%20l-1.6%20-1.3%20h3.2%20z'%20fill='%23e8a0a8'/%3E%3Cpath%20d='M13.3%2021.4%20q1.35%201.9%202.7%200%20q1.35%201.9%202.7%200'%20fill='none'%20stroke='%233b2a26'%20stroke-width='1.3'%20stroke-linecap='round'/%3E%3C/svg%3E") 6 4, auto;
+  }
 
-html.signal-cursor-active
-  :where(input, textarea, select, [contenteditable="true"]) {
-  cursor: text;
+  html :where(a, button, [role="button"], label, summary, [data-cursor]) {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cg%20stroke='%233b2a26'%20stroke-width='1.7'%20stroke-linejoin='round'%3E%3Cpath%20d='M8%2012%20L6.5%204%20L13.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cpath%20d='M24%2012%20L25.5%204%20L18.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cellipse%20cx='16'%20cy='18.5'%20rx='10.6'%20ry='9.2'%20fill='%23fdf6f1'/%3E%3C/g%3E%3Cellipse%20cx='11.8'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Cellipse%20cx='20.2'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Ccircle%20cx='12.35'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Ccircle%20cx='20.75'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Cpath%20d='M16%2018.6%20l-1.5%20-1.2%20h3%20z'%20fill='%23e8a0a8'/%3E%3Cellipse%20cx='16'%20cy='22'%20rx='6.1'%20ry='5.2'%20fill='%234a2b2b'%20stroke='%233b2a26'%20stroke-width='1.3'/%3E%3Cellipse%20cx='16'%20cy='24.2'%20rx='2.9'%20ry='2.2'%20fill='%23a15a5f'/%3E%3C/svg%3E") 6 4, pointer;
+  }
+
+  html:active,
+  html :where(a, button, [role="button"], label, summary):active {
+    cursor: url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20width='32'%20height='32'%20viewBox='0%200%2032%2032'%3E%3Cg%20stroke='%233b2a26'%20stroke-width='1.7'%20stroke-linejoin='round'%3E%3Cpath%20d='M8%2012%20L6.5%204%20L13.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cpath%20d='M24%2012%20L25.5%204%20L18.5%208%20Z'%20fill='%23c9a08f'/%3E%3Cellipse%20cx='16'%20cy='18.5'%20rx='10.6'%20ry='9.2'%20fill='%23fdf6f1'/%3E%3C/g%3E%3Cellipse%20cx='11.8'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Cellipse%20cx='20.2'%20cy='16.2'%20rx='1.5'%20ry='2'%20fill='%233b2a26'/%3E%3Ccircle%20cx='12.35'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Ccircle%20cx='20.75'%20cy='15.5'%20r='.5'%20fill='%23ffffff'/%3E%3Cpath%20d='M16%2018.6%20l-1.5%20-1.2%20h3%20z'%20fill='%23e8a0a8'/%3E%3Cellipse%20cx='16'%20cy='22'%20rx='6.1'%20ry='5.2'%20fill='%234a2b2b'%20stroke='%233b2a26'%20stroke-width='1.3'/%3E%3Cellipse%20cx='16'%20cy='24.2'%20rx='2.9'%20ry='2.2'%20fill='%23a15a5f'/%3E%3C/svg%3E") 6 4, pointer;
+  }
+
+  /* Form fields keep a real caret — a cat head is useless for placing text. */
+  html :where(input, textarea, select, [contenteditable="true"]) {
+    cursor: text;
+  }
 }
 
 /* Hide scrollbar but keep scrollability (e.g. the contribution heatmap). */

@@ -5,10 +5,8 @@ import { Toaster } from "sonner";
 import { Texture } from "@/components/texture";
 import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/providers/lenis-provider";
-import { SignalCursor } from "@/components/signal-cursor";
 import { Navbar } from "@/components/navbar";
 import { Rail } from "@/components/rail";
-import { CommandPalette } from "@/components/command-palette";
 import { Footer } from "@/components/footer";
 
 // Body copy. Variable weight axis, so no explicit weight list is needed.
@@ -84,10 +82,8 @@ export default function RootLayout({
             {/* Ambient fixed texture (dotted grid + grain). */}
             <Texture />
 
-            <SignalCursor />
             <Navbar />
             <Rail />
-            <CommandPalette />
             <Toaster theme="dark" position="bottom-right" />
 
             <main>{children}</main>

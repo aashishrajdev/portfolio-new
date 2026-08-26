@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { useTheme } from "next-themes";
 import { FiMoon, FiSun } from "react-icons/fi";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 /**
  * Browsers expose `document.startViewTransition` only on recent Chromium/WebKit.
@@ -15,9 +16,11 @@ type StartViewTransition = (callback: () => void) => {
 
 function getStartViewTransition(): StartViewTransition | null {
   if (typeof document === "undefined") return null;
-  const fn = (document as Document & {
-    startViewTransition?: StartViewTransition;
-  }).startViewTransition;
+  const fn = (
+    document as Document & {
+      startViewTransition?: StartViewTransition;
+    }
+  ).startViewTransition;
   return typeof fn === "function" ? fn.bind(document) : null;
 }
 
@@ -26,17 +29,29 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
+/* Skiper UI's "circle" variant with blur on: a hard-edged clip-path circle
+   expanding over 1s on the expo-out curve while the incoming view resolves
+   from an 8px blur. */
+const DURATION = 1000;
+const EASING = "cubic-bezier(0.16, 1, 0.3, 1)"; /* --expo-out */
+const BLUR_RAMP = ["blur(8px)", "blur(4px)", "blur(0px)"];
+
 /**
- * Monochrome dark/light toggle with a circular-reveal wipe.
+ * Monochrome dark/light toggle with Skiper UI's circle + blur reveal
+ * (skiper26, variant "circle", blur on), driven by the View Transitions API
+ * and the Web Animations API on `::view-transition-new(root)`: the incoming
+ * theme expands as a clip-path circle while its blur ramps 8px → 4px → 0.
  *
- * On click it flips the next-themes value. When `document.startViewTransition`
- * is supported (and motion is allowed) the new theme is revealed via a
- * clip-path circle expanding from the button center using the Web Animations
- * API on the `::view-transition-new(root)` pseudo-element — so no global CSS is
- * required. Otherwise it falls back to an instant toggle.
+ * Where skiper26 only anchors the circle to viewport corners/center, the
+ * origin here is the toggle button's exact centre, read from its bounding box
+ * at click time — so the reveal always starts under the cursor no matter
+ * where the toggle sits in the layout.
  *
- * A mounted guard avoids a hydration mismatch since the resolved theme is
- * unknown on the server.
+ * Falls back to an instant swap with no View Transitions support or under
+ * `prefers-reduced-motion`.
+ *
+ * Adapted from Skiper UI's theme toggle, itself derived from
+ * rudrodip/theme-toggle-effect.
  */
 export function ThemeToggle({ className }: { className?: string }) {
   const { resolvedTheme, setTheme } = useTheme();
@@ -60,9 +75,8 @@ export function ThemeToggle({ className }: { className?: string }) {
       return;
     }
 
-    // Origin = center of the toggle button; radius = farthest viewport corner.
-    const button = buttonRef.current;
-    const rect = button?.getBoundingClientRect();
+    // Origin = centre of the toggle button; radius = farthest viewport corner.
+    const rect = buttonRef.current?.getBoundingClientRect();
     const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
     const y = rect ? rect.top + rect.height / 2 : window.innerHeight / 2;
     const endRadius = Math.hypot(
@@ -76,16 +90,19 @@ export function ThemeToggle({ className }: { className?: string }) {
 
     transition.ready
       .then(() => {
+        // skiper26 grows the circle to 150% so the wipe overshoots the far
+        // corner instead of landing exactly on it.
         document.documentElement.animate(
           {
             clipPath: [
               `circle(0px at ${x}px ${y}px)`,
-              `circle(${endRadius}px at ${x}px ${y}px)`,
+              `circle(${endRadius * 1.5}px at ${x}px ${y}px)`,
             ],
+            filter: BLUR_RAMP,
           },
           {
-            duration: 480,
-            easing: "cubic-bezier(0.4, 0, 0.2, 1)",
+            duration: DURATION,
+            easing: EASING,
             pseudoElement: "::view-transition-new(root)",
           },
         );
@@ -96,7 +113,7 @@ export function ThemeToggle({ className }: { className?: string }) {
   }, [isDark, setTheme]);
 
   return (
-    <button
+    <Button
       ref={buttonRef}
       type="button"
       aria-label={
@@ -107,11 +124,9 @@ export function ThemeToggle({ className }: { className?: string }) {
           : "Toggle theme"
       }
       onClick={toggle}
-      className={cn(
-        "inline-flex h-9 w-9 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-surface-2",
-        "focus-visible:outline-none",
-        className,
-      )}
+      variant="outline"
+      size="icon"
+      className={cn("focus-visible:outline-none", className)}
     >
       {mounted ? (
         isDark ? (
@@ -122,6 +137,6 @@ export function ThemeToggle({ className }: { className?: string }) {
       ) : (
         <span className="h-4 w-4" aria-hidden />
       )}
-    </button>
+    </Button>
   );
 }

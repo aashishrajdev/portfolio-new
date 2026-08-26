@@ -10,7 +10,7 @@ import {
   FiCode,
 } from "react-icons/fi";
 import type { IconType } from "react-icons";
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
 type Social = { label: string; href: string; icon: IconType };
 
@@ -116,34 +116,31 @@ export function Footer() {
           {SOCIALS.map(({ label, href, icon: Icon }) => {
             const external = href.startsWith("http");
             return (
-              <a
+              <Button
                 key={label}
                 href={href}
                 aria-label={label}
                 {...(external
                   ? { target: "_blank", rel: "noopener noreferrer" }
                   : {})}
-                className={cn(
-                  "inline-flex h-8 w-8 items-center justify-center rounded-md border border-border text-muted-foreground",
-                  "transition-colors hover:border-foreground/30 hover:text-foreground",
-                )}
+                variant="outline"
+                size="icon-sm"
+                className="rounded-md text-muted-foreground hover:text-foreground"
               >
                 <Icon className="h-4 w-4" aria-hidden />
-              </a>
+              </Button>
             );
           })}
 
-          <a
+          <Button
             href="#"
-            className={cn(
-              "ml-1 inline-flex items-center gap-1.5 rounded-md border border-border px-2.5 py-1.5",
-              "font-mono text-xs text-muted-foreground",
-              "transition-colors hover:border-foreground/30 hover:text-foreground",
-            )}
+            variant="outline"
+            size="xs"
+            className="ml-1 gap-1.5 rounded-md font-mono font-normal text-muted-foreground hover:text-foreground"
           >
             <FiCode className="h-3.5 w-3.5" aria-hidden />
             view source
-          </a>
+          </Button>
         </div>
       </div>
     </footer>

@@ -7,7 +7,6 @@ import {
   useContext,
   useEffect,
   useRef,
-  useState,
   type ReactNode,
 } from "react";
 
@@ -17,12 +16,9 @@ import {
  * - `scrollToId(id)` — smooth-scrolls to an element by id via Lenis, with a
  *   native `scrollIntoView` fallback (also used before Lenis mounts or under
  *   reduced motion).
- * - `cursorEnabled` / `setCursorEnabled` — toggle state for the signal cursor.
  */
 type UIContextValue = {
   scrollToId: (id: string) => void;
-  cursorEnabled: boolean;
-  setCursorEnabled: (enabled: boolean) => void;
 };
 
 /** Section anchor offset (px) so headings clear the sticky navbar. */
@@ -48,7 +44,6 @@ const UIContext = createContext<UIContextValue | null>(null);
 
 export function LenisProvider({ children }: { children: ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null);
-  const [cursorEnabled, setCursorEnabled] = useState(true);
 
   useEffect(() => {
     // Honor reduced-motion: skip the Lenis instance entirely and let the
@@ -91,7 +86,7 @@ export function LenisProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <UIContext.Provider value={{ scrollToId, cursorEnabled, setCursorEnabled }}>
+    <UIContext.Provider value={{ scrollToId }}>
       {children}
     </UIContext.Provider>
   );
@@ -107,7 +102,5 @@ export function useUI(): UIContextValue {
   if (ctx) return ctx;
   return {
     scrollToId: nativeScrollToId,
-    cursorEnabled: true,
-    setCursorEnabled: () => {},
   };
 }

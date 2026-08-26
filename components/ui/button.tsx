@@ -1,8 +1,8 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import type { ComponentPropsWithRef, ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
-type Variant = "primary" | "outline" | "ghost";
-type Size = "sm" | "md";
+type Variant = "primary" | "outline" | "ghost" | "signal";
+type Size = "xs" | "sm" | "md" | "icon" | "icon-sm";
 
 interface BaseProps {
   children: ReactNode;
@@ -11,74 +11,84 @@ interface BaseProps {
   size?: Size;
 }
 
-interface ButtonAsLink extends BaseProps {
+interface ButtonAsLink
+  extends BaseProps,
+    Omit<ComponentPropsWithRef<"a">, keyof BaseProps> {
   href: string;
-  target?: string;
-  rel?: string;
 }
 
 interface ButtonAsButton
   extends BaseProps,
-    Omit<ButtonHTMLAttributes<HTMLButtonElement>, keyof BaseProps> {
+    Omit<ComponentPropsWithRef<"button">, keyof BaseProps> {
   href?: undefined;
 }
 
 type ButtonProps = ButtonAsLink | ButtonAsButton;
 
-/* The 3D read comes from a hard (un-blurred) offset shadow acting as the
-   button's extruded edge: it grows as the button lifts on hover and collapses
-   as the button travels down on press. */
+/* Every variant is the same glass; they differ only in how thick the fill is
+   mixed and what rims it. The layered bevel, specular highlight and shadows
+   live in `.glass-btn` in globals.css, since the stack is five box-shadows
+   deep and cannot be expressed as utilities. */
 const variants: Record<Variant, string> = {
-  primary: cn(
-    "bg-foreground text-background border border-foreground hover:bg-foreground/90",
-    "shadow-[0_4px_0_0_var(--muted-foreground)]",
-    "hover:shadow-[0_6px_0_0_var(--muted-foreground)]",
-    "active:shadow-[0_1px_0_0_var(--muted-foreground)]",
-  ),
-  outline: cn(
-    "border border-border text-foreground hover:bg-surface",
-    "shadow-[0_4px_0_0_var(--border)]",
-    "hover:shadow-[0_6px_0_0_var(--border)]",
-    "active:shadow-[0_1px_0_0_var(--border)]",
-  ),
-  ghost: cn(
-    "border border-transparent text-foreground hover:bg-surface",
-    "shadow-[0_4px_0_0_var(--border)]",
-    "hover:shadow-[0_6px_0_0_var(--border)]",
-    "active:shadow-[0_1px_0_0_var(--border)]",
-  ),
+  primary: "glass-btn glass-btn-strong text-foreground",
+  outline: "glass-btn text-foreground",
+  ghost: "glass-btn text-foreground",
+  signal: "glass-btn glass-btn-signal text-foreground",
 };
 
 const sizes: Record<Size, string> = {
+  xs: "h-8 px-3 text-xs",
   sm: "h-9 px-4 text-sm",
   md: "h-11 px-6 text-sm",
+  /** Square, for a lone icon. */
+  icon: "h-9 w-9 p-0",
+  "icon-sm": "h-8 w-8 p-0",
 };
 
 /**
- * Monochrome action. Renders an <a> when `href` is provided, otherwise a
- * <button>. rounded-full, hairline borders, hover surface fill, and a hard
- * offset edge that lifts on hover and presses down on click. Focus ring is
- * provided globally via :focus-visible.
+ * The single action surface for the site. Renders an <a> when `href` is
+ * provided, otherwise a <button>; both forward their native attributes, so a
+ * link keeps `aria-label`/`target` and a button keeps `type`/`disabled`.
+ *
+ * rounded-full glass: a translucent fill over a blurred backdrop, a lit top
+ * bevel, a shaded base and soft shadows underneath. Lifts on hover, sinks on
+ * press, and drops the travel under `prefers-reduced-motion`. Focus ring comes
+ * from the global :focus-visible rule.
+ *
+ * Pass `className` to override shape where a control needs it — e.g.
+ * `rounded-md` for the square footer icons.
  */
 export function Button(props: ButtonProps) {
   const { children, className, variant = "primary", size = "md" } = props;
 
   const classes = cn(
     "inline-flex items-center justify-center gap-2 rounded-full font-medium",
-    "transition-[transform,box-shadow,background-color,border-color] duration-150 ease-out",
-    "hover:-translate-y-0.5 active:translate-y-0.5",
+    "transition-[transform,box-shadow,border-color,color] duration-150 ease-out",
+    "hover:-translate-y-0.5 active:translate-y-px",
     "motion-reduce:transform-none motion-reduce:transition-colors",
     "disabled:pointer-events-none disabled:opacity-50",
     "disabled:translate-y-0 disabled:shadow-none",
     variants[variant],
     sizes[size],
-    className
+    className,
   );
 
   if (props.href !== undefined) {
-    const { href, target, rel } = props;
+    // Strip the shared props so only valid anchor attributes remain.
+    const {
+      variant: _variant,
+      size: _size,
+      className: _className,
+      children: _children,
+      ...rest
+    } = props;
+    void _variant;
+    void _size;
+    void _className;
+    void _children;
+
     return (
-      <a href={href} target={target} rel={rel} className={classes}>
+      <a className={classes} {...rest}>
         {children}
       </a>
     );

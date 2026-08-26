@@ -6,7 +6,10 @@ import { Container } from "@/components/ui/container";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { KeyCap } from "@/components/key-cap";
 import { useUI } from "@/components/providers/lenis-provider";
-import { setCommandPaletteOpen } from "@/components/command-palette";
+import {
+  SearchCommand,
+  setCommandPaletteOpen,
+} from "@/components/command-palette";
 import { cn } from "@/lib/utils";
 
 /**
@@ -84,20 +87,9 @@ export function Navbar() {
             </button>
           </div>
 
-          {/* Centered search / command palette trigger */}
+          {/* Centered search — expands into the command palette in place. */}
           <div className="absolute left-1/2 top-1/2 hidden -translate-x-1/2 -translate-y-1/2 sm:block">
-            <button
-              type="button"
-              onClick={() => setCommandPaletteOpen(true)}
-              aria-label="Open command palette"
-              className={cn(
-                "inline-flex items-center gap-2 rounded-full border border-border bg-surface px-3 py-1.5",
-                "font-mono text-xs text-muted-foreground transition-colors hover:text-foreground hover:border-foreground/30"
-              )}
-            >
-              <span>search</span>
-              <KeyCap className="text-signal">Ctrl/⌘ + K</KeyCap>
-            </button>
+            <SearchCommand />
           </div>
 
           {/* Right cluster */}

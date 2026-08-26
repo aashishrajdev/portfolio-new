@@ -17,6 +17,7 @@ import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Panel } from "@/components/ui/panel";
 import { Reveal } from "@/components/ui/reveal";
+import { Button } from "@/components/ui/button";
 import { StatusDot } from "@/components/ui/status-dot";
 import { cn } from "@/lib/utils";
 
@@ -299,17 +300,11 @@ interface SubmitButtonProps {
 
 function SubmitButton({ sent, reduceMotion }: SubmitButtonProps) {
   return (
-    <button
+    <Button
       type="submit"
       disabled={sent}
-      className={cn(
-        "inline-flex h-11 items-center justify-center gap-2 rounded-full px-6",
-        "border text-sm font-medium transition-colors duration-300",
-        "disabled:pointer-events-none",
-        sent
-          ? "border-signal/40 bg-surface text-foreground"
-          : "border-foreground bg-foreground text-background hover:bg-foreground/90"
-      )}
+      variant={sent ? "signal" : "primary"}
+      className="text-sm"
     >
       {sent ? (
         <>
@@ -322,7 +317,7 @@ function SubmitButton({ sent, reduceMotion }: SubmitButtonProps) {
           <FiArrowRight aria-hidden className="h-4 w-4" />
         </>
       )}
-    </button>
+    </Button>
   );
 }
 

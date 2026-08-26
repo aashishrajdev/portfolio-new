@@ -18,7 +18,7 @@ export function Card({ children, className, as }: CardProps) {
   return (
     <Component
       className={cn(
-        "frosted rounded-2xl border border-border p-6",
+        "frosted frosted-hover rounded-2xl border border-border p-6",
         "transition-colors duration-300 hover:border-foreground/20",
         className
       )}
