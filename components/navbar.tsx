@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { FiMenu, FiX } from "react-icons/fi";
 import { Container } from "@/components/ui/container";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { KeyCap } from "@/components/key-cap";
 import { useUI } from "@/components/providers/lenis-provider";
 import {
@@ -93,8 +92,6 @@ export function Navbar() {
 
           {/* Right cluster */}
           <div className="flex items-center gap-2">
-            <ThemeToggle />
-
             {/* Mobile hamburger */}
             <button
               type="button"
@@ -117,7 +114,7 @@ export function Navbar() {
       <div
         className={cn(
           "overflow-hidden border-border transition-[max-height] duration-300 md:hidden",
-          open ? "max-h-128 border-t" : "max-h-0"
+          open ? "max-h-128 border-t" : "max-h-0",
         )}
       >
         <Container>

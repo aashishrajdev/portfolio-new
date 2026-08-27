@@ -3,7 +3,6 @@ import { Fredoka, Nunito } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Texture } from "@/components/texture";
-import { ThemeProvider } from "@/components/theme-provider";
 import { LenisProvider } from "@/components/providers/lenis-provider";
 import { Navbar } from "@/components/navbar";
 import { Rail } from "@/components/rail";
@@ -71,26 +70,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${nunito.variable} ${fredoka.variable}`}
-    >
+    <html lang="en" className={`${nunito.variable} ${fredoka.variable} dark`}>
       <body className="overflow-x-hidden bg-background text-foreground antialiased font-sans">
-        <ThemeProvider>
-          <LenisProvider>
-            {/* Ambient fixed texture (dotted grid + grain). */}
-            <Texture />
+        <LenisProvider>
+          {/* Ambient fixed texture (dotted grid + grain). */}
+          <Texture />
 
-            <Navbar />
-            <Rail />
-            <Toaster theme="dark" position="bottom-right" />
+          <Navbar />
+          <Rail />
+          <Toaster theme="dark" position="bottom-right" />
 
-            <main>{children}</main>
+          <main>{children}</main>
 
-            <Footer />
-          </LenisProvider>
-        </ThemeProvider>
+          <Footer />
+        </LenisProvider>
       </body>
     </html>
   );

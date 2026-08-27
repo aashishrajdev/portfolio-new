@@ -1,7 +1,6 @@
 "use client";
 
 import { Command } from "cmdk";
-import { useTheme } from "next-themes";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import {
   useCallback,
@@ -13,7 +12,7 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
-import { ArrowRight, Copy, FileText, Moon, Search, Sun } from "lucide-react";
+import { ArrowRight, Copy, FileText, Search } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import { toast } from "sonner";
 
@@ -209,7 +208,6 @@ const GROUP_CLASS =
 --------------------------------------------------------------------------- */
 function PaletteSurface() {
   const { scrollToId } = useUI();
-  const { resolvedTheme, setTheme } = useTheme();
   const [search, setSearch] = useState("");
 
   const close = useCallback(() => setCommandPaletteOpen(false), []);
@@ -232,10 +230,6 @@ function PaletteSurface() {
   const openExternal = useCallback((url: string) => {
     window.open(url, "_blank", "noopener,noreferrer");
   }, []);
-
-  const toggleTheme = useCallback(() => {
-    setTheme(resolvedTheme === "dark" ? "light" : "dark");
-  }, [resolvedTheme, setTheme]);
 
   // Deferred so a fast typist re-filters the site index at low priority while
   // the input itself stays perfectly responsive.
@@ -343,21 +337,6 @@ function PaletteSurface() {
             Open résumé
           </PaletteItem>
 
-          <PaletteItem
-            value="toggle theme"
-            keywords={["dark", "light", "appearance"]}
-            onSelect={() => run(toggleTheme)}
-            icon={
-              resolvedTheme === "dark" ? (
-                <Sun className="size-4" />
-              ) : (
-                <Moon className="size-4" />
-              )
-            }
-            meta={resolvedTheme === "dark" ? "dark" : "light"}
-          >
-            Toggle theme
-          </PaletteItem>
         </Command.Group>
 
         {siteMatches.length > 0 ? (

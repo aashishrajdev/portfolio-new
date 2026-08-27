@@ -6,20 +6,21 @@ import { SpriteTracker } from "@/lib/sprite-tracker";
 import { cn } from "@/lib/utils";
 
 /**
- * Sheet geometry, mirrored from public/hero/boy-sprite.json. The strip runs
- * from "turned toward the viewer's left" at cell 0 to "turned toward the
- * viewer's right" at the last cell; NEUTRAL_INDEX is the front-facing pose the
- * tracker settles back into when the pointer leaves.
+ * Sheet geometry, mirrored from public/hero/boy-sprite.json. The sheet is a
+ * 48x2 grid; cell 0 is the subject turned fully toward the viewer's left, the
+ * last cell fully toward the viewer's right, and NEUTRAL_INDEX is the
+ * front-facing pose the tracker settles back into when the pointer leaves.
  */
 const SHEET = {
-  src: "/hero/boy-sprite.webp",
-  frames: 40,
-  frameWidth: 408,
-  frameHeight: 493,
-  neutralIndex: 17.125,
+  frames: 96,
+  columns: 48,
+  frameWidth: 338,
+  frameHeight: 408,
+  neutralIndex: 60.049,
 } as const;
 
-const STILL_SRC = "/hero/boy-still.png";
+const SHEET_SRC = "/hero/boy-sprite-dark.webp";
+const STILL_SRC = "/hero/boy-still-dark.png";
 
 interface HeroCharacterProps {
   className?: string;
@@ -32,7 +33,7 @@ interface HeroCharacterProps {
 }
 
 /**
- * Cursor-tracking hero portrait. The figure is a transparent sprite strip
+ * Cursor-tracking hero portrait. The figure is a transparent sprite grid
  * scrubbed by pointer position, so it drops onto any background and can be
  * placed anywhere in the layout — it only occupies the box it is given and
  * never intercepts pointer events.
@@ -52,6 +53,7 @@ export function HeroCharacter({
 
     const tracker = new SpriteTracker(canvas, {
       ...SHEET,
+      src: SHEET_SRC,
       ...(idleAmplitude === undefined ? {} : { idleAmplitude }),
       onReady: (err) => {
         // On failure the still image simply stays put.
@@ -63,6 +65,15 @@ export function HeroCharacter({
     return () => tracker.destroy();
   }, [idleAmplitude]);
 
+  const maskStyle = fadeBottom
+    ? {
+        maskImage:
+          "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
+        WebkitMaskImage:
+          "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
+      }
+    : undefined;
+
   return (
     <div
       role="img"
@@ -70,19 +81,10 @@ export function HeroCharacter({
       className={cn(
         "pointer-events-none relative select-none",
         // Matches the sprite cell so the box never letterboxes the figure.
-        "aspect-[408/493] w-full",
+        "aspect-[338/408] w-full",
         className,
       )}
-      style={
-        fadeBottom
-          ? {
-              maskImage:
-                "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
-              WebkitMaskImage:
-                "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
-            }
-          : undefined
-      }
+      style={maskStyle}
     >
       {glow ? (
         <div

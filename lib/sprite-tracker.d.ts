@@ -7,6 +7,8 @@ export interface SpriteTrackerOptions {
   frameWidth: number;
   /** Cell height in px. */
   frameHeight: number;
+  /** Cells per sheet row (default: frames, i.e. a single row). */
+  columns?: number;
   /** Float index of the resting, front-facing pose. */
   neutralIndex?: number;
   /** Yaw spring constant while tracking. */
@@ -48,6 +50,8 @@ export interface SpriteTrackerOptions {
 export declare class SpriteTracker {
   constructor(canvas: HTMLCanvasElement, options: SpriteTrackerOptions);
   start(): Promise<void>;
+  /** Swap in a different sheet, preserving the current pose and spring state. */
+  setSource(src: string): Promise<void>;
   destroy(): void;
 }
 

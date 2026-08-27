@@ -30,7 +30,7 @@
   --font-mono: var(--font-nunito);
 }
 
-/* Dark is the default theme (true black). */
+/* Single theme: dark (true black). */
 :root {
   --background: #000000;
   --foreground: #ffffff;
@@ -46,22 +46,6 @@
   --dot-base: 0.05;
   --dot-peak: 0.26;
   --radius: 1rem;
-}
-
-/* Light theme override (applied when <html> has the .light class). */
-.light {
-  --background: #ffffff;
-  --foreground: #0a0a0a;
-  --surface: #f7f7f8;
-  --surface-2: #f1f1f3;
-  --border: #e4e4e7;
-  --muted-foreground: #71717a;
-  /* signal stays the same green in light mode */
-  --signal: #34d399;
-  --dot: #dc2626;
-  --dot-color: 10 10 10;
-  --dot-base: 0.1;
-  --dot-peak: 0.24;
 }
 
 html {
