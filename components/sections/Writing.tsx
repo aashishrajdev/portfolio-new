@@ -70,7 +70,7 @@ export default function Writing() {
   return (
     <Section id="writing">
       <SectionHeading
-        index="05"
+        index="04"
         eyebrow="writing"
         heading="notes from the log"
         description="occasional write-ups on backend systems, observability, and the messier parts of shipping to production."

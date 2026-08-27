@@ -190,7 +190,7 @@ export default function OpenSource() {
   return (
     <Section id="open-source">
       <SectionHeading
-        index="04"
+        index="03"
         eyebrow="open source"
         heading="working in the open"
         description="public repositories and upstream pull requests: the parts of the system anyone can read, fork, and audit."

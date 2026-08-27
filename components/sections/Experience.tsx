@@ -101,7 +101,7 @@ export default function Experience() {
   return (
     <Section
       id="experience"
-      index="02"
+      index="01"
       heading={
         <>
           deploy <span className="font-serif italic">history</span>

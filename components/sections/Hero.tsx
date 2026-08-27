@@ -9,8 +9,11 @@ import { Button } from "@/components/ui/button";
 import { Counter } from "@/components/ui/counter";
 import { StatusDot } from "@/components/ui/status-dot";
 import { KeyCap } from "@/components/ui/key-cap";
+import { Panel } from "@/components/ui/panel";
+import { Badge } from "@/components/ui/badge";
 import { useUI } from "@/components/providers/lenis-provider";
 import { toggleCommandPalette } from "@/components/command-palette";
+import { HeroCharacter } from "@/components/hero-character";
 import { cn } from "@/lib/utils";
 import type {
   ContribDay,
@@ -83,7 +86,7 @@ function HeroCommitSignal() {
   }, [days]);
 
   return (
-    <div className="frosted rounded-md border border-border p-5">
+    <div className="frosted flex h-full flex-col rounded-md border border-border p-5">
       {/* Header */}
       <div className="flex items-baseline justify-between gap-4 font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground">
         <span className="inline-flex items-center gap-2">
@@ -128,7 +131,7 @@ function HeroCommitSignal() {
       </p>
 
       {/* Computed stats — fills the column with real telemetry */}
-      <dl className="mt-5 grid grid-cols-3 gap-px overflow-hidden rounded-md border border-border bg-border">
+      <dl className="mt-auto grid grid-cols-3 gap-px pt-5 overflow-hidden rounded-md border border-border bg-border">
         <div className="frosted px-3 py-3.5">
           <dt className="font-mono text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
             active days
@@ -160,7 +163,7 @@ function HeroCommitSignal() {
         href="https://github.com/aashishrajdev"
         target="_blank"
         rel="noopener noreferrer"
-        className="group mt-4 inline-flex items-center gap-2 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
+        className="group mt-auto inline-flex items-center gap-2 pt-4 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         <FiGithub className="h-3.5 w-3.5" aria-hidden />
         github.com/aashishrajdev
@@ -294,11 +297,68 @@ export default function Hero() {
           </motion.button>
         </div>
 
-        {/* RIGHT — live commit signal (GitHub graph + computed stats) */}
+        {/* RIGHT — cursor-tracking portrait */}
+        <motion.div
+          initial={{ opacity: 0, y: rise(18) }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 0.35, ease: [0.16, 1, 0.3, 1] }}
+          className="order-first mx-auto w-[min(78%,320px)] lg:order-none lg:mx-0 lg:w-full lg:max-w-[400px] lg:justify-self-end"
+        >
+          <HeroCharacter />
+        </motion.div>
+      </div>
+
+      {/* readme.md + commit signal share one stretch row, so the grid gives
+          both cards exactly the same height. */}
+      <div className="mt-8 grid grid-cols-1 gap-6 lg:grid-cols-[1.4fr_1fr] lg:items-stretch lg:gap-8">
+        <motion.div
+          initial={{ opacity: 0, y: rise(12) }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
+          className="h-full"
+        >
+          <Panel
+            title="readme.md"
+            className="flex h-full flex-col"
+            bodyClassName="flex flex-1 flex-col p-5 sm:p-6"
+          >
+            <div className="space-y-3 text-sm leading-relaxed text-muted-foreground">
+              <p>
+                <span className="text-foreground">i&apos;m aashish</span>, a
+                22yo cse grad (sep &apos;20), from uttarakhand, currently in
+                pune. i build web products and the infrastructure underneath
+                them.
+              </p>
+              <p>
+                most of my time goes to backend and devops: designing apis,
+                wiring up databases, and making deploys uneventful. i
+                contribute to open source and read more production
+                post-mortems than i probably should.
+              </p>
+              <p>
+                i care about the boring parts: error budgets, reproducible
+                builds, the gap between &quot;works on my machine&quot; and
+                &quot;works at 3am&quot;. confident through restraint,
+                monochrome by choice.
+              </p>
+            </div>
+
+            <div className="mt-auto flex flex-wrap gap-2 pt-6">
+              <Badge>typescript</Badge>
+              <Badge>node.js</Badge>
+              <Badge>python</Badge>
+              <Badge>postgres</Badge>
+              <Badge>docker</Badge>
+              <Badge>aws</Badge>
+            </div>
+          </Panel>
+        </motion.div>
+
         <motion.div
           initial={{ opacity: 0, y: rise(16) }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          transition={{ duration: 0.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          className="h-full"
         >
           <HeroCommitSignal />
         </motion.div>

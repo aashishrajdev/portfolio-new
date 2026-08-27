@@ -31,12 +31,11 @@ type RailSection = {
 /** Ordered section map — indices/hotkeys per the "Uptime" spec. */
 const SECTIONS: readonly RailSection[] = [
   { id: "hero", index: "00", hotkey: "H", label: "Hero" },
-  { id: "about", index: "01", hotkey: "A", label: "About" },
-  { id: "experience", index: "02", hotkey: "E", label: "Experience" },
-  { id: "projects", index: "03", hotkey: "P", label: "Projects" },
-  { id: "open-source", index: "04", hotkey: "O", label: "Open Source" },
-  { id: "writing", index: "05", hotkey: "W", label: "Writing" },
-  { id: "contact", index: "06", hotkey: "C", label: "Contact" },
+  { id: "experience", index: "01", hotkey: "E", label: "Experience" },
+  { id: "projects", index: "02", hotkey: "P", label: "Projects" },
+  { id: "open-source", index: "03", hotkey: "O", label: "Open Source" },
+  { id: "writing", index: "04", hotkey: "W", label: "Writing" },
+  { id: "contact", index: "05", hotkey: "C", label: "Contact" },
 ] as const;
 
 /** Lowercased hotkey -> section id lookup for the global keydown handler. */

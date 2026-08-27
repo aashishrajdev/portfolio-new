@@ -17,6 +17,8 @@ import { ArrowRight, Copy, FileText, Moon, Search, Sun } from "lucide-react";
 import { FiGithub, FiLinkedin } from "react-icons/fi";
 import { toast } from "sonner";
 
+import { createPortal } from "react-dom";
+
 import { useUI } from "@/components/providers/lenis-provider";
 
 /* ---------------------------------------------------------------------------
@@ -74,12 +76,11 @@ type NavTarget = { id: string; index: string; label: string };
 
 const NAV_TARGETS: NavTarget[] = [
   { id: "hero", index: "00", label: "Hero" },
-  { id: "about", index: "01", label: "About" },
-  { id: "experience", index: "02", label: "Experience" },
-  { id: "projects", index: "03", label: "Projects" },
-  { id: "open-source", index: "04", label: "Open Source" },
-  { id: "writing", index: "05", label: "Writing" },
-  { id: "contact", index: "06", label: "Contact" },
+  { id: "experience", index: "01", label: "Experience" },
+  { id: "projects", index: "02", label: "Projects" },
+  { id: "open-source", index: "03", label: "Open Source" },
+  { id: "writing", index: "04", label: "Writing" },
+  { id: "contact", index: "05", label: "Contact" },
 ];
 
 const EMAIL = "rajaashish.dev@gmail.com";
@@ -256,7 +257,7 @@ function PaletteSurface() {
     <Command
       label="Command menu"
       loop
-      className="frosted flex w-full flex-col overflow-hidden rounded-xl border border-border text-foreground"
+      className="flex w-full flex-col overflow-hidden rounded-xl border border-border bg-surface/92 text-foreground [-webkit-backdrop-filter:blur(28px)_saturate(150%)] [backdrop-filter:blur(28px)_saturate(150%)]"
       filter={(value, search, keywords) => {
         const haystack = `${value} ${(keywords ?? []).join(" ")}`.toLowerCase();
         return haystack.includes(search.toLowerCase()) ? 1 : 0;
@@ -404,6 +405,15 @@ export function SearchCommand() {
   const open = useCommandPaletteOpen();
   const reduce = useReducedMotion();
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+
+  // SSR-stable mount flag (no setState-in-effect): server snapshot is false,
+  // client snapshot is true, so the portal only renders after hydration.
+  const mounted = useSyncExternalStore(
+    subscribe,
+    () => true,
+    () => false,
+  );
 
   // Global ⌘K / Ctrl+K listener to toggle the palette.
   useEffect(() => {
@@ -422,7 +432,8 @@ export function SearchCommand() {
   useEffect(() => {
     if (!open) return;
     function onPointerDown(e: PointerEvent) {
-      if (!rootRef.current?.contains(e.target as Node)) {
+      const t = e.target as Node;
+      if (!rootRef.current?.contains(t) && !panelRef.current?.contains(t)) {
         setCommandPaletteOpen(false);
       }
     }
@@ -455,34 +466,42 @@ export function SearchCommand() {
         </span>
       </button>
 
-      <AnimatePresence>
-        {open ? (
-          <motion.div
-            initial={
-              reduce
-                ? { opacity: 0 }
-                : { opacity: 0, scale: 0.9, y: -6, filter: "blur(6px)" }
-            }
-            animate={{ opacity: 1, scale: 1, y: 0, filter: "blur(0px)" }}
-            exit={
-              reduce
-                ? { opacity: 0 }
-                : {
-                    opacity: 0,
-                    scale: 0.96,
-                    y: -4,
-                    filter: "blur(4px)",
-                    transition: { duration: 0.14, ease: "easeIn" },
+      {/* The open panel is portaled to <body>: the navbar wrapper's transform
+          and the header's backdrop-filter each create stacking contexts, and
+          inside them no z-index can reliably clear the page content below.
+          Fixed at the pill's visual position (nav is 64px tall, pill 32px,
+          panel offset -16/-8 from the pill, pill centred at 50% - 96px). */}
+      {mounted
+        ? createPortal(
+            <AnimatePresence>
+              {open ? (
+                <motion.div
+                  ref={panelRef}
+                  initial={
+                    reduce ? { opacity: 0 } : { opacity: 0, scale: 0.9, y: -6 }
                   }
-            }
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            style={{ originX: 0.15, originY: 0 }}
-            className="absolute -left-4 -top-2 w-96"
-          >
-            <PaletteSurface />
-          </motion.div>
-        ) : null}
-      </AnimatePresence>
+                  animate={{ opacity: 1, scale: 1, y: 0 }}
+                  exit={
+                    reduce
+                      ? { opacity: 0 }
+                      : {
+                          opacity: 0,
+                          scale: 0.96,
+                          y: -4,
+                          transition: { duration: 0.14, ease: "easeIn" },
+                        }
+                  }
+                  transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ originX: 0.15, originY: 0 }}
+                  className="fixed left-[calc(50%-112px)] top-2 z-[120] w-96"
+                >
+                  <PaletteSurface />
+                </motion.div>
+              ) : null}
+            </AnimatePresence>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

@@ -19,7 +19,6 @@ import { cn } from "@/lib/utils";
  */
 const MOBILE_LINKS = [
   { label: "home", id: "hero" },
-  { label: "about", id: "about" },
   { label: "experience", id: "experience" },
   { label: "projects", id: "projects" },
   { label: "open source", id: "open-source" },

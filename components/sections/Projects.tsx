@@ -476,7 +476,7 @@ export default function Projects() {
   return (
     <Section
       id="projects"
-      index="03"
+      index="02"
       heading={
         <>
           Selected <span className="italic text-muted-foreground">systems</span>

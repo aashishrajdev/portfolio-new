@@ -93,9 +93,11 @@ const fieldLabel =
 
 const fieldBase = cn(
   "w-full rounded-md border border-border bg-surface-2 px-3.5 py-2.5",
-  "text-sm text-foreground placeholder:text-muted-foreground/60",
+  "text-sm text-foreground caret-signal placeholder:text-muted-foreground/60",
   "transition-colors duration-200",
-  "focus:outline-none focus:border-foreground/30"
+  // Focus reads from the brightened border + signal caret; the global
+  // :focus-visible signal ring is suppressed here, like the Find input.
+  "focus:outline-none focus:border-foreground/30 focus-visible:[box-shadow:none]",
 );
 
 /* -------------------------------------------------------------------------- */
@@ -117,7 +119,7 @@ export default function Contact() {
     const subject = `ping: ${name.trim() || "request"} via portfolio`;
     const body = `name: ${name}\nemail: ${email}\n\n${message}`;
     const mailto = `mailto:${CONTACT_EMAIL}?subject=${encodeURIComponent(
-      subject
+      subject,
     )}&body=${encodeURIComponent(body)}`;
 
     if (typeof window !== "undefined") {
@@ -133,7 +135,7 @@ export default function Contact() {
   return (
     <Section id="contact">
       <SectionHeading
-        index="06"
+        index="05"
         eyebrow="ping"
         heading="open a connection"
         description="have a role, a system worth building, or a problem worth solving? send a request. i read every one and respond fast."
@@ -313,7 +315,7 @@ function SubmitButton({ sent, reduceMotion }: SubmitButtonProps) {
         </>
       ) : (
         <>
-          send request
+          Transmit Signal
           <FiArrowRight aria-hidden className="h-4 w-4" />
         </>
       )}

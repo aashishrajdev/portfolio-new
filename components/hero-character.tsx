@@ -1,0 +1,121 @@
+"use client";
+
+import * as React from "react";
+
+import { SpriteTracker } from "@/lib/sprite-tracker";
+import { cn } from "@/lib/utils";
+
+/**
+ * Sheet geometry, mirrored from public/hero/boy-sprite.json. The strip runs
+ * from "turned toward the viewer's left" at cell 0 to "turned toward the
+ * viewer's right" at the last cell; NEUTRAL_INDEX is the front-facing pose the
+ * tracker settles back into when the pointer leaves.
+ */
+const SHEET = {
+  src: "/hero/boy-sprite.webp",
+  frames: 40,
+  frameWidth: 408,
+  frameHeight: 493,
+  neutralIndex: 17.125,
+} as const;
+
+const STILL_SRC = "/hero/boy-still.png";
+
+interface HeroCharacterProps {
+  className?: string;
+  /** Soften the bottom edge so the chest crop dissolves into the page. */
+  fadeBottom?: boolean;
+  /** Subtle radial wash behind the figure. */
+  glow?: boolean;
+  /** Passed through to the tracker — see SpriteTrackerOptions. */
+  idleAmplitude?: number;
+}
+
+/**
+ * Cursor-tracking hero portrait. The figure is a transparent sprite strip
+ * scrubbed by pointer position, so it drops onto any background and can be
+ * placed anywhere in the layout — it only occupies the box it is given and
+ * never intercepts pointer events.
+ */
+export function HeroCharacter({
+  className,
+  fadeBottom = true,
+  glow = true,
+  idleAmplitude,
+}: HeroCharacterProps) {
+  const canvasRef = React.useRef<HTMLCanvasElement>(null);
+  const [ready, setReady] = React.useState(false);
+
+  React.useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+
+    const tracker = new SpriteTracker(canvas, {
+      ...SHEET,
+      ...(idleAmplitude === undefined ? {} : { idleAmplitude }),
+      onReady: (err) => {
+        // On failure the still image simply stays put.
+        if (!err) setReady(true);
+      },
+    });
+    void tracker.start();
+
+    return () => tracker.destroy();
+  }, [idleAmplitude]);
+
+  return (
+    <div
+      role="img"
+      aria-label="Illustrated portrait of Aashish that follows your cursor"
+      className={cn(
+        "pointer-events-none relative select-none",
+        // Matches the sprite cell so the box never letterboxes the figure.
+        "aspect-[408/493] w-full",
+        className,
+      )}
+      style={
+        fadeBottom
+          ? {
+              maskImage:
+                "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
+              WebkitMaskImage:
+                "linear-gradient(to bottom, #000 74%, rgba(0,0,0,0.55) 90%, transparent 100%)",
+            }
+          : undefined
+      }
+    >
+      {glow ? (
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10"
+          style={{
+            background:
+              "radial-gradient(58% 46% at 50% 34%, color-mix(in oklab, var(--foreground) 8%, transparent), transparent 72%)",
+          }}
+        />
+      ) : null}
+
+      {/* Resting pose. Paints immediately, then hands over to the canvas. */}
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        src={STILL_SRC}
+        alt=""
+        width={SHEET.frameWidth}
+        height={SHEET.frameHeight}
+        decoding="async"
+        fetchPriority="high"
+        className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500"
+        style={{ opacity: ready ? 0 : 1 }}
+      />
+
+      <canvas
+        ref={canvasRef}
+        aria-hidden
+        className="absolute inset-0 h-full w-full object-contain transition-opacity duration-500 will-change-transform"
+        style={{ opacity: ready ? 1 : 0, transformOrigin: "50% 84%" }}
+      />
+    </div>
+  );
+}
+
+export default HeroCharacter;
