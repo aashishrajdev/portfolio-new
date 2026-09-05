@@ -62,14 +62,11 @@ export function Section({
   return (
     <section
       id={id}
-      className={cn(
-        "scroll-mt-24 py-14 md:py-20",
-        // Rendering is skipped while the section is far off-screen; the
-        // 700px estimate is only used before first render, then the real
-        // measured size is remembered (the `auto` keyword).
-        "[contain-intrinsic-size:auto_700px] [content-visibility:auto]",
-        className,
-      )}
+      // NOTE: no content-visibility here. `content-visibility:auto` on these
+      // sections, combined with the full-viewport fixed background layer,
+      // put Chromium into a continuous invalidation loop — ~85s of main-thread
+      // blocking time in Lighthouse. Measured, bisected, and removed.
+      className={cn("scroll-mt-24 py-14 md:py-20", className)}
     >
       {contained ? (
         <Container className={containerClassName}>{body}</Container>
