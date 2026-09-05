@@ -48,6 +48,18 @@
   --radius: 1rem;
 }
 
+/* Marquee track: two copies of the same sequence sit side by side, and the
+   track slides one full copy-width per loop, so the motion is seamless. The
+   -50%% start makes items enter from the left edge and travel rightward. */
+@keyframes marquee-right {
+  from {
+    transform: translateX(-50%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
 html {
   /* Lenis manages smooth scroll at runtime; this is a graceful fallback. */
   scroll-behavior: smooth;

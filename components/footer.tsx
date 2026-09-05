@@ -2,28 +2,8 @@
 
 import { useEffect, useState } from "react";
 import NumberFlow, { type Format } from "@number-flow/react";
-import {
-  FiGithub,
-  FiLinkedin,
-  FiMail,
-  FiTwitter,
-  FiCode,
-} from "react-icons/fi";
-import type { IconType } from "react-icons";
+import { FiCode } from "react-icons/fi";
 import { Button } from "@/components/ui/button";
-
-type Social = { label: string; href: string; icon: IconType };
-
-const SOCIALS: Social[] = [
-  { label: "GitHub", href: "https://github.com/aashishrajdev", icon: FiGithub },
-  {
-    label: "LinkedIn",
-    href: "https://www.linkedin.com/in/aashishraj-dev/",
-    icon: FiLinkedin,
-  },
-  { label: "Twitter", href: "#", icon: FiTwitter },
-  { label: "Email", href: "mailto:rajaashish.dev@gmail.com", icon: FiMail },
-];
 
 /** Returns IST (UTC+5:30) hours/minutes/seconds, recomputed each tick. */
 function getISTParts(): { h: number; m: number; s: number } {
@@ -111,29 +91,12 @@ export function Footer() {
           <span>built with next.js + tailwind</span>
         </div>
 
-        {/* Right — socials + view source */}
+        {/* Right — view source */}
         <div className="flex items-center gap-2">
-          {SOCIALS.map(({ label, href, icon: Icon }) => {
-            const external = href.startsWith("http");
-            return (
-              <Button
-                key={label}
-                href={href}
-                aria-label={label}
-                {...(external
-                  ? { target: "_blank", rel: "noopener noreferrer" }
-                  : {})}
-                variant="outline"
-                size="icon-sm"
-                className="rounded-md text-muted-foreground hover:text-foreground"
-              >
-                <Icon className="h-4 w-4" aria-hidden />
-              </Button>
-            );
-          })}
-
           <Button
-            href="#"
+            href="https://github.com/aashishrajdev/portfolio-new"
+            target="_blank"
+            rel="noopener noreferrer"
             variant="outline"
             size="xs"
             className="ml-1 gap-1.5 rounded-md font-mono font-normal text-muted-foreground hover:text-foreground"

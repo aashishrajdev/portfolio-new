@@ -33,10 +33,6 @@ const EASE = 0.16;
     Matches Tailwind's `md` breakpoint. */
 const MIN_WIDTH = 768;
 
-/** Padding around the dome's dirty rectangle, covering displaced dot extents
-    (lift + push + scaled radius) so a cleared region never clips a dot. */
-const DIRTY_PAD = 28;
-
 type Palette = { color: string; base: number; peak: number };
 
 function readPalette(): Palette {
@@ -58,7 +54,8 @@ export function DotGrid() {
 
     let width = 0;
     let height = 0;
-    let palette = readPalette();
+    let dpr = 1;
+    const palette = readPalette();
 
     // Real pointer, the smoothed pointer that trails it, and how much of the
     // effect is currently applied (0 while the pointer is away from the page).
@@ -72,25 +69,23 @@ export function DotGrid() {
     let running = false;
 
     function resize() {
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
       width = window.innerWidth;
       height = window.innerHeight;
-      canvas!.width = Math.floor(width * dpr);
-      canvas!.height = Math.floor(height * dpr);
-      canvas!.style.width = `${width}px`;
-      canvas!.style.height = `${height}px`;
+      // Backing store and CSS size must describe the same rectangle, or the
+      // browser rescales the canvas and the 24px lattice picks up a moiré of
+      // unevenly anti-aliased dots (fractional zoom levels made this visible).
+      const pw = Math.round(width * dpr);
+      const ph = Math.round(height * dpr);
+      canvas!.width = pw;
+      canvas!.height = ph;
+      canvas!.style.width = `${pw / dpr}px`;
+      canvas!.style.height = `${ph / dpr}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       draw();
     }
 
-    /** Bounding box of the dome around the smoothed pointer, padded so every
-        displaced dot falls inside. Null when the grid is fully at rest. */
-    let prevDirty: { x0: number; y0: number; x1: number; y1: number } | null =
-      null;
-
-    /** Draw every grid dot whose centre falls inside [x0,x1]×[y0,y1].
-        Cost is O(region area / pitch²), not O(canvas area / pitch²) — the
-        interactive frame only ever touches the dome's neighbourhood. */
+    /** Draw every grid dot whose centre falls inside [x0,x1]×[y0,y1]. */
     function drawRegion(x0: number, y0: number, x1: number, y1: number) {
       const { color, base, peak } = palette;
       const reachSq = REACH * REACH;
@@ -105,12 +100,14 @@ export function DotGrid() {
         PITCH / 2 + Math.floor((x0 - PITCH / 2) / PITCH) * PITCH,
       );
 
+      // The overwhelming majority of dots are at rest and share one style, so
+      // they accumulate into a single path and one fill() — thousands of
+      // beginPath/fill round-trips per frame is what used to drop frames.
+      // Dome dots have per-dot alpha and radius, so they still draw singly.
+      const restPath = new Path2D();
       for (let y = startY; y <= y1 && y < height + PITCH; y += PITCH) {
         for (let x = startX; x <= x1 && x < width + PITCH; x += PITCH) {
-          let alpha = base;
-          let dx = 0;
-          let dy = 0;
-          let radius = BASE_RADIUS;
+          let inDome = false;
 
           if (energy > 0.001) {
             const vx = x - smoothX;
@@ -118,80 +115,66 @@ export function DotGrid() {
             const distSq = vx * vx + vy * vy;
 
             if (distSq < reachSq) {
+              inDome = true;
               const dist = Math.sqrt(distSq) || 0.0001;
               // Smoothstep falloff — flat at the rim, rounded at the peak.
               const linear = 1 - dist / REACH;
               const t = linear * linear * (3 - 2 * linear) * energy;
 
-              radius = BASE_RADIUS * (1 + (MAX_SCALE - 1) * t);
-              alpha = base + (peak - base) * t;
+              const radius = BASE_RADIUS * (1 + (MAX_SCALE - 1) * t);
+              const alpha = base + (peak - base) * t;
               // Up the y-axis, plus a nudge away from the cursor so the
               // displacement reads as height rather than a flat glow.
-              dy = -LIFT * t + (vy / dist) * PUSH * t;
-              dx = (vx / dist) * PUSH * t;
+              const dy = -LIFT * t + (vy / dist) * PUSH * t;
+              const dx = (vx / dist) * PUSH * t;
+              ctx!.fillStyle = `rgb(${color} / ${alpha})`;
+              ctx!.beginPath();
+              ctx!.arc(x + dx, y + dy, radius, 0, Math.PI * 2);
+              ctx!.fill();
             }
           }
 
-          ctx!.fillStyle = `rgb(${color} / ${alpha})`;
-          ctx!.beginPath();
-          ctx!.arc(x + dx, y + dy, radius, 0, Math.PI * 2);
-          ctx!.fill();
+          if (!inDome) {
+            // Resting dots snap to device-pixel centres so every dot gets the
+            // same anti-aliasing; at fractional zoom the unsnapped lattice
+            // shimmers, with each dot blurred by a different subpixel phase.
+            const cx = (Math.round(x * dpr - 0.5) + 0.5) / dpr;
+            const cy = (Math.round(y * dpr - 0.5) + 0.5) / dpr;
+            restPath.moveTo(cx + BASE_RADIUS, cy);
+            restPath.arc(cx, cy, BASE_RADIUS, 0, Math.PI * 2);
+          }
         }
       }
+      ctx!.fillStyle = `rgb(${color} / ${base})`;
+      ctx!.fill(restPath);
     }
 
-    /** Full repaint — used on resize, theme change, and initial mount. */
+    /** Full repaint. One pass is ~2k arcs — cheap enough to be the only
+        drawing strategy. The previous incremental dirty-rect scheme saved a
+        little work per frame but could leave a residue of dome-brightened
+        dots along the pointer's trail, which read as an unstable grid. */
     function draw() {
       ctx!.clearRect(0, 0, width, height);
       drawRegion(0, 0, width, height);
-      prevDirty = null;
-    }
-
-    /** Interactive repaint: clear and redraw only the union of the previous
-        and current dome rectangles. Everything outside is untouched pixels. */
-    function drawInteractive() {
-      const r = REACH + DIRTY_PAD;
-      // Snap the rect outward to lattice midlines (k·PITCH): dots sit at
-      // PITCH/2 offsets, so no dot circle can straddle a midline — clearing
-      // on these boundaries can never shave a neighbour it will not redraw.
-      const cur = {
-        x0: Math.max(0, Math.floor((smoothX - r) / PITCH) * PITCH),
-        y0: Math.max(0, Math.floor((smoothY - r) / PITCH) * PITCH),
-        x1: Math.min(width, Math.ceil((smoothX + r) / PITCH) * PITCH),
-        y1: Math.min(height, Math.ceil((smoothY + r) / PITCH) * PITCH),
-      };
-      const u = prevDirty
-        ? {
-            x0: Math.min(prevDirty.x0, cur.x0),
-            y0: Math.min(prevDirty.y0, cur.y0),
-            x1: Math.max(prevDirty.x1, cur.x1),
-            y1: Math.max(prevDirty.y1, cur.y1),
-          }
-        : cur;
-
-      ctx!.clearRect(u.x0, u.y0, u.x1 - u.x0, u.y1 - u.y0);
-      drawRegion(u.x0, u.y0, u.x1, u.y1);
-      prevDirty = energy > 0.001 ? cur : null;
     }
 
     function tick() {
       smoothX += (pointerX - smoothX) * EASE;
       smoothY += (pointerY - smoothY) * EASE;
       energy += (targetEnergy - energy) * EASE;
+      if (energy < 0.002 && targetEnergy === 0) energy = 0;
 
-      drawInteractive();
+      draw();
 
-      const settled =
-        targetEnergy === 0 &&
-        energy < 0.002 &&
+      // Sleep whenever nothing is moving: pointer parked (dome painted and
+      // static) or pointer gone and the dome fully decayed. A pointermove
+      // wakes the loop again.
+      const still =
         Math.abs(pointerX - smoothX) < 0.5 &&
-        Math.abs(pointerY - smoothY) < 0.5;
-
-      if (settled) {
-        energy = 0;
+        Math.abs(pointerY - smoothY) < 0.5 &&
+        Math.abs(targetEnergy - energy) < 0.002;
+      if (still) {
         running = false;
-        // One last regional pass restores the resting grid where the dome was.
-        drawInteractive();
         return;
       }
       frame = requestAnimationFrame(tick);
@@ -233,16 +216,6 @@ export function DotGrid() {
       start();
     }
 
-    // The palette lives in CSS, so re-read it whenever the theme class flips.
-    const themeObserver = new MutationObserver(() => {
-      palette = readPalette();
-      draw();
-    });
-    themeObserver.observe(document.documentElement, {
-      attributes: true,
-      attributeFilter: ["class"],
-    });
-
     function onResize() {
       // Settle back to the flat grid if the resize crossed into mobile.
       if (!interactive()) targetEnergy = 0;
@@ -256,7 +229,6 @@ export function DotGrid() {
 
     return () => {
       cancelAnimationFrame(frame);
-      themeObserver.disconnect();
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onPointerMove);
       document.removeEventListener("pointerleave", onPointerLeave);

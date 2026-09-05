@@ -60,9 +60,28 @@ export function HeroCharacter({
         if (!err) setReady(true);
       },
     });
-    void tracker.start();
 
-    return () => tracker.destroy();
+    // Fetching and slicing the 1.5MB sheet is deliberately deferred to browser
+    // idle: at mount the page is mid entrance animation, and the decode was
+    // costing it frames. The still image holds the pose until the sheet lands.
+    type IdleWindow = Window & {
+      requestIdleCallback?: (cb: () => void, opts?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    const w = window as IdleWindow;
+    let idleId: number;
+    let timerId: number | undefined;
+    if (typeof w.requestIdleCallback === "function") {
+      idleId = w.requestIdleCallback(() => void tracker.start(), { timeout: 2000 });
+    } else {
+      timerId = window.setTimeout(() => void tracker.start(), 900);
+    }
+
+    return () => {
+      if (timerId !== undefined) window.clearTimeout(timerId);
+      else w.cancelIdleCallback?.(idleId);
+      tracker.destroy();
+    };
   }, [idleAmplitude]);
 
   const maskStyle = fadeBottom

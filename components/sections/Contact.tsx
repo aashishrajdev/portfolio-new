@@ -8,8 +8,8 @@ import {
   FiLinkedin,
   FiMail,
   FiMapPin,
-  FiTwitter,
 } from "react-icons/fi";
+import { FaXTwitter, FaMedium } from "react-icons/fa6";
 import type { IconType } from "react-icons";
 import { motion, useReducedMotion } from "motion/react";
 import { toast } from "sonner";
@@ -74,7 +74,13 @@ const socials: Social[] = [
     label: "x",
     value: "@aashishrajdev",
     href: "#",
-    icon: FiTwitter,
+    icon: FaXTwitter,
+  },
+  {
+    label: "medium",
+    value: "@aashishrajdev",
+    href: "https://medium.com/@aashishrajdev",
+    icon: FaMedium,
   },
   {
     label: "résumé",

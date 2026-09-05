@@ -1,10 +1,8 @@
-import { FiGitCommit, FiArrowUpRight } from "react-icons/fi";
+import { FiGitCommit } from "react-icons/fi";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
-import { Panel } from "@/components/ui/panel";
 import { Badge } from "@/components/ui/badge";
 import { Reveal } from "@/components/ui/reveal";
-import { Counter } from "@/components/ui/counter";
 
 /**
  * A single deploy/changelog entry — modeled as a commit row on a deploy
@@ -16,16 +14,29 @@ interface DeployEntry {
   role: string;
   company: string;
   location: string;
-  /** Mono timestamp range, e.g. "2026.02 → present". */
+  /** Mono timestamp range, e.g. "feb 2026 → present". */
   period: string;
   /** True while the role is the current deploy (live HEAD). */
   current?: boolean;
   summary: string;
-  /** Quantified impact metrics rendered as mono stat cells. */
-  metrics: { value: number; suffix?: string; label: string }[];
-  highlights: string[];
   tech: string[];
 }
+
+/** Official docs for each stack chip. Chips without an entry (concepts rather
+    than tools) render as plain badges. */
+const TECH_DOCS: Record<string, string> = {
+  Python: "https://docs.python.org/3/",
+  FastAPI: "https://fastapi.tiangolo.com/",
+  gRPC: "https://grpc.io/docs/",
+  protobuf: "https://protobuf.dev/",
+  MCP: "https://modelcontextprotocol.io/",
+  TypeScript: "https://www.typescriptlang.org/docs/",
+  React: "https://react.dev/",
+  Accessibility: "https://www.w3.org/WAI/standards-guidelines/wcag/",
+  "Node.js": "https://nodejs.org/en/docs",
+  REST: "https://developer.mozilla.org/en-US/docs/Glossary/REST",
+  "AWS Amplify": "https://docs.amplify.aws/",
+};
 
 const DEPLOYS: DeployEntry[] = [
   {
@@ -33,20 +44,10 @@ const DEPLOYS: DeployEntry[] = [
     role: "Backend Developer",
     company: "SaaS product company",
     location: "Pune, IN",
-    period: "2026.02 → present",
+    period: "feb 2026 → present",
     current: true,
     summary:
       "joined as an intern in feb 2026, backend developer since jul 2026, owning backend tooling and internal services, from production bugfixes to a live querying service.",
-    metrics: [
-      { value: 5, suffix: "+", label: "prod bugs resolved" },
-      { value: 8, suffix: "+", label: "reusable components" },
-      { value: 1, label: "fastapi mcp server" },
-    ],
-    highlights: [
-      "Resolved 5+ production bugs across the live product stack.",
-      "Shipped 8+ reusable Angular Ionic components into the shared library.",
-      "Built a Python FastAPI MCP server exposing gRPC/protobuf tools for live backend querying.",
-    ],
     tech: ["Python", "FastAPI", "gRPC", "protobuf", "MCP"],
   },
   {
@@ -54,19 +55,9 @@ const DEPLOYS: DeployEntry[] = [
     role: "Software Developer Intern",
     company: "Spinach (pre-launch)",
     location: "Remote",
-    period: "2025.05 → 2025.10",
+    period: "may 2025 → oct 2025",
     summary:
       "built the core interface for a pre-launch product, ahead of schedule and accessible by default.",
-    metrics: [
-      { value: 5, suffix: "+", label: "core screens shipped" },
-      { value: 20, suffix: "+", label: "component library" },
-      { value: 2, label: "sprints ahead" },
-    ],
-    highlights: [
-      "Shipped 5+ core screens two sprints early.",
-      "Built a reusable 20+ component library for the product surface.",
-      "Delivered WCAG 2.1 AA compliant interfaces for the pre-launch product.",
-    ],
     tech: ["TypeScript", "React", "Accessibility", "Component Systems"],
   },
   {
@@ -74,19 +65,9 @@ const DEPLOYS: DeployEntry[] = [
     role: "Freelance Developer",
     company: "Unigo (campus delivery startup)",
     location: "Remote",
-    period: "2025.09 → 2025.12",
+    period: "sep 2025 → dec 2025",
     summary:
       "designed and launched a campus delivery platform end-to-end, with a CI/CD path to zero-downtime releases.",
-    metrics: [
-      { value: 10, suffix: "+", label: "rest endpoints" },
-      { value: 1, label: "full order lifecycle" },
-      { value: 0, label: "downtime releases" },
-    ],
-    highlights: [
-      "Designed and launched the Unigo campus delivery platform: catalog browsing and full order lifecycle.",
-      "Built 10+ REST endpoints powering the ordering flow.",
-      "Set up AWS Amplify CI/CD for zero-downtime releases.",
-    ],
     tech: ["Node.js", "REST", "AWS Amplify", "CI/CD"],
   },
 ];
@@ -94,8 +75,8 @@ const DEPLOYS: DeployEntry[] = [
 /**
  * Section 03 — Experience as a "deploy history / changelog". Each role is a
  * commit-like entry on a left trace rail, carrying a mono timestamp, a short
- * summary, quantified impact metrics, and the stack it ran on. Server
- * component; in-view motion comes from <Reveal> and animated <Counter> stats.
+ * summary, changelog-style notes, and the stack it ran on. Server
+ * component; in-view motion comes from <Reveal>.
  */
 export default function Experience() {
   return (
@@ -104,14 +85,14 @@ export default function Experience() {
       index="01"
       heading={
         <>
-          deploy <span className="font-serif italic">history</span>
+          work <span className="font-serif italic">history</span>
         </>
       }
     >
       <SectionHeading
         eyebrow="changelog"
         heading="where the work shipped"
-        description="A reverse-chronological log of roles. Read it like a deploy history: timestamp, summary, and the measurable change each one left behind."
+        description="A reverse-chronological log of roles: where i was, what i was building, and the stack it ran on."
       />
 
       <ol className="relative mt-8 md:mt-10">
@@ -122,9 +103,9 @@ export default function Experience() {
         />
 
         {DEPLOYS.map((entry, index) => (
-          <li key={entry.ref} className="relative">
+          <li key={entry.ref} className="relative pb-16 last:pb-0">
             <Reveal delay={index * 0.06}>
-              <div className="grid gap-x-10 gap-y-4 pb-14 last:pb-0 md:grid-cols-[9rem_1fr]">
+              <div className="grid gap-x-10 gap-y-4 md:grid-cols-[9rem_1fr]">
                 {/* Timestamp column (desktop) */}
                 <div className="hidden pt-1 md:block md:text-right">
                   <span className="font-mono text-xs uppercase tracking-[0.12em] text-muted-foreground tabular-nums">
@@ -179,51 +160,25 @@ export default function Experience() {
                     {entry.summary}
                   </p>
 
-                  {/* Impact metrics */}
-                  <Panel
-                    title="impact"
-                    bodyClassName="grid grid-cols-3 divide-x divide-border p-0"
-                    className="mt-5"
-                  >
-                    {entry.metrics.map((metric) => (
-                      <div
-                        key={metric.label}
-                        className="flex flex-col gap-1 px-3 py-4 sm:px-4"
-                      >
-                        <span className="font-mono text-xl leading-none text-foreground tabular-nums sm:text-2xl">
-                          <Counter
-                            value={metric.value}
-                            suffix={metric.suffix}
-                          />
-                        </span>
-                        <span className="font-mono text-[0.65rem] uppercase leading-tight tracking-[0.1em] text-muted-foreground">
-                          {metric.label}
-                        </span>
-                      </div>
-                    ))}
-                  </Panel>
 
-                  {/* Changelog highlights */}
-                  <ul className="mt-5 flex flex-col gap-2.5">
-                    {entry.highlights.map((highlight) => (
-                      <li
-                        key={highlight}
-                        className="flex gap-3 text-sm leading-relaxed text-muted-foreground"
-                      >
-                        <FiArrowUpRight
-                          aria-hidden
-                          className="mt-1 h-3.5 w-3.5 shrink-0 text-muted-foreground/60"
-                        />
-                        <span>{highlight}</span>
-                      </li>
-                    ))}
-                  </ul>
 
-                  {/* Stack */}
+                  {/* Stack — chips link to each tool's docs, like the hero marquee. */}
                   <div className="mt-5 flex flex-wrap gap-2">
-                    {entry.tech.map((tech) => (
-                      <Badge key={tech}>{tech}</Badge>
-                    ))}
+                    {entry.tech.map((tech) =>
+                      TECH_DOCS[tech] ? (
+                        <a
+                          key={tech}
+                          href={TECH_DOCS[tech]}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center rounded-full border border-border px-3 py-1 font-mono text-xs tracking-tight text-muted-foreground transition-colors duration-200 hover:border-foreground/40 hover:text-foreground"
+                        >
+                          {tech}
+                        </a>
+                      ) : (
+                        <Badge key={tech}>{tech}</Badge>
+                      ),
+                    )}
                   </div>
                 </div>
               </div>

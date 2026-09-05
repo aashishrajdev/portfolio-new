@@ -2,7 +2,6 @@ import {
   FiExternalLink,
   FiGithub,
 } from "react-icons/fi";
-import type { RepoCard } from "@/types";
 import { Section } from "@/components/ui/section";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Panel } from "@/components/ui/panel";
@@ -15,34 +14,14 @@ import { Counter } from "@/components/ui/counter";
 /**
  * Section 05 — Open Source, framed as a service status board.
  *
- * Each public repo reads as a monitored "service" (a `.panel` dashboard
- * module, not a marketing card): a mono register index, an operational
- * status line, and the language it runs on. Server component — renders
- * client primitives (Reveal, Counter) but holds no state of its own.
+ * Upstream contributions as a service status board. Server component —
+ * renders client primitives (Reveal, Counter) but holds no state of its own.
  *
  * Honest by construction: every count below is real and checkable against the
- * GitHub API — no fabricated stars. The live commit signal lives in the GitHub
- * section above; this is the set of things anyone can read, fork, and audit.
+ * GitHub API — each row links to the query that proves it.
  */
 
 const PROFILE = "https://github.com/aashishrajdev";
-
-const REPOS: RepoCard[] = [
-  {
-    name: "aashishrajdev/syncsy",
-    description:
-      "real-time collaboration engine: conflict-free multi-user sync over websockets, postgres + prisma.",
-    url: "https://github.com/aashishrajdev/syncsy",
-    language: "TypeScript",
-  },
-  {
-    name: "aashishrajdev/urbaneyes",
-    description:
-      "civic reporting platform: geotagged issue intake, a status pipeline and an admin triage dashboard.",
-    url: "https://github.com/aashishrajdev/urbaneyes",
-    language: "JavaScript",
-  },
-];
 
 /**
  * Upstream work: pull requests landed in repos owned by someone else (or, for
@@ -95,61 +74,6 @@ const UPSTREAM: Upstream[] = [
 const MERGED_TOTAL = UPSTREAM.reduce((sum, u) => sum + u.merged, 0);
 
 /**
- * One monitored "service": a dashboard module (Panel) with a mono register
- * index in the title bar, an operational status dot, the repo name, and a
- * footer health line of language + a view link.
- */
-function ServiceModule({ repo, index }: { repo: RepoCard; index: string }) {
-  return (
-    <Panel
-      className="group flex h-full flex-col transition-colors hover:border-foreground/20"
-      title={
-        <span className="flex items-center gap-2">
-          <span className="text-foreground tabular-nums">{index}</span>
-          <span aria-hidden className="text-border">
-            /
-          </span>
-          <span>service</span>
-        </span>
-      }
-      status
-      bodyClassName="flex flex-1 flex-col gap-4 p-4"
-    >
-      <div className="flex items-center gap-2 font-mono text-sm text-foreground">
-        <FiGithub aria-hidden className="h-4 w-4 shrink-0 text-muted-foreground" />
-        <span className="break-all">{repo.name}</span>
-      </div>
-
-      <p className="text-sm leading-relaxed text-muted-foreground">
-        {repo.description}
-      </p>
-
-      <div className="mt-auto flex flex-wrap items-center gap-x-5 gap-y-2 border-t border-border pt-4">
-        {repo.language ? (
-          <span className="inline-flex items-center gap-2 font-mono text-xs text-muted-foreground">
-            <span
-              aria-hidden
-              className="inline-block h-1.5 w-1.5 rounded-full bg-muted-foreground"
-            />
-            {repo.language}
-          </span>
-        ) : null}
-        <a
-          href={repo.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto inline-flex items-center gap-1.5 font-mono text-xs text-muted-foreground transition-colors hover:text-foreground"
-          aria-label={`Open ${repo.name} on GitHub`}
-        >
-          view
-          <FiExternalLink aria-hidden className="h-3.5 w-3.5" />
-        </a>
-      </div>
-    </Panel>
-  );
-}
-
-/**
  * One upstream contribution: the org, what the work was, and a merged/opened
  * tally that links out to the PR list it was counted from.
  */
@@ -192,7 +116,7 @@ export default function OpenSource() {
       <SectionHeading
         index="03"
         eyebrow="open source"
-        heading="working in the open"
+        heading="Open source"
         description="public repositories and upstream pull requests: the parts of the system anyone can read, fork, and audit."
       />
 
@@ -204,37 +128,19 @@ export default function OpenSource() {
             <span className="text-foreground">contributing</span>
           </span>
           <span className="inline-flex items-baseline gap-1.5">
-            <Counter value={REPOS.length} className="text-base text-foreground" />
-            public repos
-          </span>
-          <span className="inline-flex items-baseline gap-1.5">
             <Counter value={MERGED_TOTAL} className="text-base text-foreground" />
             merged upstream
-          </span>
-          <span className="inline-flex items-center gap-1.5">
-            <span className="text-foreground">live commit signal above</span>
           </span>
         </div>
       </Reveal>
 
-      {/* Service status board — each repo is a monitored module */}
-      <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {REPOS.map((repo, i) => (
-          <Reveal key={repo.name} delay={i * 0.06}>
-            <ServiceModule
-              repo={repo}
-              index={String(i + 1).padStart(2, "0")}
-            />
-          </Reveal>
-        ))}
-      </div>
 
       {/* Upstream board — PRs landed in repos I do not own */}
-      <Reveal className="mt-4" delay={0.1}>
+      <Reveal className="mt-8" delay={0.1}>
         <Panel
           title={
             <span className="flex items-center gap-2">
-              <span className="text-foreground tabular-nums">03</span>
+              <span className="text-foreground tabular-nums">01</span>
               <span aria-hidden className="text-border">
                 /
               </span>

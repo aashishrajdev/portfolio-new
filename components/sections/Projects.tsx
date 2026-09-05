@@ -1,13 +1,5 @@
 "use client";
 
-import { useRef } from "react";
-import {
-  motion,
-  useReducedMotion,
-  useScroll,
-  useTransform,
-  type MotionValue,
-} from "motion/react";
 import { FiArrowUpRight, FiGithub, FiExternalLink } from "react-icons/fi";
 
 import { Section } from "@/components/ui/section";
@@ -15,18 +7,12 @@ import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Reveal } from "@/components/ui/reveal";
-import { StatusDot } from "@/components/ui/status-dot";
 import { cn } from "@/lib/utils";
 
 /* ----------------------------------------------------------------------------
- * Content — real flagship systems, framed problem -> architecture -> stack ->
- * outcome. Links use "#" where the real URL is unknown (build-safe).
+ * Content — real flagship systems, framed problem -> architecture -> stack.
+ * Links use "#" where the real URL is unknown (build-safe).
  * -------------------------------------------------------------------------- */
-
-interface FlowNode {
-  /** Short mono label for a hop in the request path. */
-  label: string;
-}
 
 interface Flagship {
   index: string;
@@ -36,84 +22,90 @@ interface Flagship {
   kind: string;
   problem: string;
   architecture: string;
-  /** The request-flow hops drawn in the inline SVG diagram. */
-  flow: FlowNode[];
   stack: string[];
-  outcomes: { metric: string; label: string }[];
   repoUrl: string;
   liveUrl: string;
+}
+
+/** Official docs for each stack chip. Chips without an entry (concepts rather
+    than tools) render as plain badges. */
+const TECH_DOCS: Record<string, string> = {
+  TypeScript: "https://www.typescriptlang.org/docs/",
+  Go: "https://go.dev/doc/",
+  ConnectRPC: "https://connectrpc.com/docs/",
+  "Next.js": "https://nextjs.org/docs",
+  WebSockets: "https://developer.mozilla.org/en-US/docs/Web/API/WebSockets_API",
+  PostgreSQL: "https://www.postgresql.org/docs/",
+  Prisma: "https://www.prisma.io/docs",
+  "Node.js": "https://nodejs.org/en/docs",
+  "REST API": "https://developer.mozilla.org/en-US/docs/Glossary/REST",
+  React: "https://react.dev/",
+  Tailwind: "https://tailwindcss.com/docs",
+  motion: "https://motion.dev/docs",
+  Python: "https://docs.python.org/3/",
+  FastAPI: "https://fastapi.tiangolo.com/",
+  gRPC: "https://grpc.io/docs/",
+  protobuf: "https://protobuf.dev/",
+  Angular: "https://angular.dev/overview",
+  Ionic: "https://ionicframework.com/docs",
+  "AWS Amplify": "https://docs.amplify.aws/",
+  JavaScript: "https://developer.mozilla.org/en-US/docs/Web/JavaScript",
+  REST: "https://developer.mozilla.org/en-US/docs/Glossary/REST",
+};
+
+/** A stack chip: linked to its docs when one exists, a plain badge otherwise. */
+function TechChip({ tech }: { tech: string }) {
+  const href = TECH_DOCS[tech];
+  if (!href) return <Badge>{tech}</Badge>;
+  return (
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="inline-flex items-center rounded-full border border-border px-3 py-1 font-mono text-xs tracking-tight text-muted-foreground transition-colors duration-200 hover:border-foreground/40 hover:text-foreground"
+    >
+      {tech}
+    </a>
+  );
 }
 
 const FLAGSHIPS: Flagship[] = [
   {
     index: "01",
-    title: "Syncsy",
-    year: "2025",
-    kind: "Real-time collaboration system",
+    title: "HaloMail",
+    year: "building",
+    kind: "Scheduling + contact-form platform — work in progress",
     problem:
-      "Multiple users editing the same document at once will clobber each other's writes. Last-write-wins loses data, and naive locking kills the live, in-the-room feel that collaboration is supposed to have.",
+      "A booking page and a portfolio contact form are somehow two separate paid subscriptions. That felt like one API's job.",
     architecture:
-      "A WebSocket layer fans changes out to every connected client, while a conflict-free merge strategy reconciles concurrent edits before they're committed. Postgres (via Prisma) is the durable source of truth; the socket tier stays stateless so sessions can scale horizontally without sticky routing.",
-    flow: [
-      { label: "client" },
-      { label: "ws gateway" },
-      { label: "merge" },
-      { label: "postgres" },
-    ],
-    stack: ["TypeScript", "WebSockets", "PostgreSQL", "Prisma", "Node.js"],
-    outcomes: [
-      { metric: "conflict-free", label: "concurrent merge" },
-      { metric: "multi-user", label: "live sessions" },
-      { metric: "stateless", label: "socket tier" },
-    ],
-    repoUrl: "#",
-    liveUrl: "#",
+      "One typed ConnectRPC contract, spoken as gRPC or plain REST. A Go backend syncs Google and Outlook calendars; an embeddable widget catches form submissions, filters the spam, and forwards the rest. Still building it — in the open.",
+    stack: ["TypeScript", "Go", "ConnectRPC", "Next.js"],
+    repoUrl: "https://github.com/aashishrajdev/halomail",
+    liveUrl: "https://halomail.vercel.app",
   },
   {
     index: "02",
-    title: "UrbanEyes",
-    year: "2025",
-    kind: "Civic reporting platform",
+    title: "Syncsy",
+    year: "may 2025",
+    kind: "Real-time collaboration system",
     problem:
-      "Civic issues like broken lights, potholes and unsafe spots get reported into the void. Without a structured pipeline from sighting to resolution, reports pile up with no owner, no status, and no feedback loop back to the people who filed them.",
+      "Two people type in the same document, and one of them loses. Most apps quietly pick a winner.",
     architecture:
-      "A full-stack pipeline takes a geotagged report, persists it, and moves it through a lifecycle of states. A REST API backs the submission and status surfaces; the data model keeps each report auditable from first sighting to closed, so nothing silently disappears.",
-    flow: [
-      { label: "report" },
-      { label: "api" },
-      { label: "lifecycle" },
-      { label: "store" },
-    ],
-    stack: ["Full-Stack", "REST API", "Node.js", "Database"],
-    outcomes: [
-      { metric: "geotagged", label: "report intake" },
-      { metric: "lifecycle", label: "tracked states" },
-      { metric: "auditable", label: "report trail" },
-    ],
+      "WebSockets fan every edit out live, a conflict-free merge decides what sticks, and Postgres remembers it. No locks, no lost keystrokes.",
+    stack: ["TypeScript", "WebSockets", "PostgreSQL", "Prisma", "Node.js"],
     repoUrl: "#",
     liveUrl: "#",
   },
   {
     index: "03",
-    title: "Learnod V2",
-    year: "2024",
-    kind: "Learning platform",
+    title: "UrbanEyes",
+    year: "apr 2025",
+    kind: "Civic reporting platform",
     problem:
-      "Learning content is easy to publish and hard to make stick. A flat list of resources gives no sense of progress, no structure to follow, and no reason to come back tomorrow.",
+      "You report a broken streetlight and never hear about it again. Civic complaints go into a void.",
     architecture:
-      "A full-stack rebuild organises content into structured paths with progress tracking, served by a clean API and a responsive client. The second iteration tightened the data model and the delivery surface so the experience holds up as the catalogue grows.",
-    flow: [
-      { label: "learner" },
-      { label: "api" },
-      { label: "progress" },
-      { label: "content" },
-    ],
-    stack: ["Full-Stack", "REST API", "React", "Node.js"],
-    outcomes: [
-      { metric: "structured", label: "learning paths" },
-      { metric: "tracked", label: "learner progress" },
-      { metric: "v2", label: "rebuilt model" },
-    ],
+      "Every geotagged report gets an owner, a status, and a paper trail — from first sighting to fixed. Nothing disappears quietly.",
+    stack: ["Full-Stack", "REST API", "Node.js", "Database"],
     repoUrl: "#",
     liveUrl: "#",
   },
@@ -210,100 +202,6 @@ const TIERS: Tier[] = [
 ];
 
 /* ----------------------------------------------------------------------------
- * Request-flow diagram — a hairline path with nodes whose signal fill advances
- * as the flagship block scrolls through the viewport (framer useScroll).
- * Reduced motion -> the front rests at the midpoint, statically.
- * -------------------------------------------------------------------------- */
-
-function FlowNodeDot({
-  i,
-  count,
-  progress,
-  reduce,
-}: {
-  i: number;
-  count: number;
-  progress: MotionValue<number>;
-  reduce: boolean | null;
-}) {
-  // Each node "lights up" as the scroll front passes its position along 0..1.
-  const at = count > 1 ? i / (count - 1) : 0;
-  const window = 1 / Math.max(count, 1);
-  const opacity = useTransform(
-    progress,
-    [at - window, at, 1],
-    reduce ? [0.5, 0.5, 0.5] : [0.15, 1, 1],
-    { clamp: true },
-  );
-
-  return (
-    <motion.span
-      aria-hidden
-      style={{ opacity }}
-      className="relative inline-flex h-2 w-2 items-center justify-center"
-    >
-      <span className="h-2 w-2 rounded-full bg-signal" />
-    </motion.span>
-  );
-}
-
-function RequestFlow({ flow }: { flow: FlowNode[] }) {
-  const reduce = useReducedMotion();
-  const ref = useRef<HTMLDivElement | null>(null);
-  // Track this row through the viewport so the trace fills as you read past it.
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start 0.9", "start 0.35"],
-  });
-
-  // The hairline that the signal trace draws over.
-  const traceWidth = useTransform(
-    scrollYProgress,
-    [0, 1],
-    reduce ? ["50%", "50%"] : ["0%", "100%"],
-  );
-
-  return (
-    <div ref={ref} className="select-none">
-      <div className="mb-3 font-mono text-[0.65rem] uppercase tracking-[0.22em] text-muted-foreground">
-        request flow
-      </div>
-      <div className="relative flex items-center">
-        {/* Base hairline track */}
-        <span
-          aria-hidden
-          className="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-border"
-        />
-        {/* Signal trace drawing left -> right */}
-        <motion.span
-          aria-hidden
-          style={{ width: traceWidth }}
-          className="absolute left-0 top-1/2 h-px -translate-y-1/2 bg-signal"
-        />
-        <div className="relative flex w-full items-center justify-between gap-2">
-          {flow.map((node, i) => (
-            <div
-              key={node.label}
-              className="flex min-w-0 flex-col items-center gap-2"
-            >
-              <FlowNodeDot
-                i={i}
-                count={flow.length}
-                progress={scrollYProgress}
-                reduce={reduce}
-              />
-              <span className="whitespace-nowrap font-mono text-[0.6rem] tracking-tight text-muted-foreground sm:text-[0.65rem]">
-                {node.label}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-
-/* ----------------------------------------------------------------------------
  * Flagship block — sticky-pinned narrative panel.
  * -------------------------------------------------------------------------- */
 
@@ -367,10 +265,6 @@ function Flagship({ item }: { item: Flagship }) {
         <Stage label="problem">{item.problem}</Stage>
         <Stage label="architecture">{item.architecture}</Stage>
 
-        {/* Request-flow diagram */}
-        <div className="panel p-5">
-          <RequestFlow flow={item.flow} />
-        </div>
 
         {/* Stack */}
         <div>
@@ -379,30 +273,11 @@ function Flagship({ item }: { item: Flagship }) {
           </div>
           <div className="flex flex-wrap gap-2">
             {item.stack.map((tech) => (
-              <Badge key={tech}>{tech}</Badge>
+              <TechChip key={tech} tech={tech} />
             ))}
           </div>
         </div>
 
-        {/* Outcome */}
-        <div>
-          <div className="mb-3 flex items-center gap-2 font-mono text-[0.65rem] uppercase tracking-[0.22em] text-muted-foreground">
-            <StatusDot size="sm" />
-            outcome
-          </div>
-          <dl className="grid grid-cols-1 gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-3">
-            {item.outcomes.map((o) => (
-              <div key={o.label} className="frosted p-4">
-                <dt className="font-mono text-base text-foreground tabular-nums">
-                  {o.metric}
-                </dt>
-                <dd className="mt-1 font-mono text-[0.7rem] uppercase tracking-[0.16em] text-muted-foreground">
-                  {o.label}
-                </dd>
-              </div>
-            ))}
-          </dl>
-        </div>
       </div>
     </div>
   );
@@ -451,7 +326,7 @@ function TierBlock({ tier }: { tier: Tier }) {
               </p>
               <div className="mt-4 flex flex-wrap gap-2">
                 {p.tech.map((t) => (
-                  <Badge key={t}>{t}</Badge>
+                  <TechChip key={t} tech={t} />
                 ))}
               </div>
             </Card>
@@ -470,8 +345,14 @@ function TierBlock({ tier }: { tier: Tier }) {
  * Projects (section 04) — signature sticky-pinned showcase of flagship systems
  * framed problem -> architecture -> stack -> outcome with a scroll-driven
  * request-flow diagram, followed by a tiered Systems / Apps / Archive grid.
- * Client component: uses framer useScroll for the request-flow trace.
  */
+/**
+ * Archived for now at the owner's request: the systems / apps / archive card
+ * grid below the flagships. Flip to true to bring it back — the data and
+ * components stay compiled so they cannot rot while parked.
+ */
+const SHOW_TIER_GRID = false;
+
 export default function Projects() {
   return (
     <Section
@@ -479,7 +360,7 @@ export default function Projects() {
       index="02"
       heading={
         <>
-          Selected <span className="italic text-muted-foreground">systems</span>
+          Selected <span className="italic text-muted-foreground">projects</span>
         </>
       }
     >
@@ -495,18 +376,16 @@ export default function Projects() {
         ))}
       </div>
 
-      {/* Tiered grid */}
-      <div className="mt-28 md:mt-40">
-        <div className="mb-12 flex items-center gap-3 font-mono text-xs uppercase tracking-[0.2em] text-muted-foreground">
-          <span className="h-px w-8 bg-border" aria-hidden />
-          more work
+      {/* Tiered grid — archived behind SHOW_TIER_GRID, see note on the flag. */}
+      {SHOW_TIER_GRID ? (
+        <div className="mt-24 md:mt-32">
+          <div className="flex flex-col gap-16">
+            {TIERS.map((tier) => (
+              <TierBlock key={tier.id} tier={tier} />
+            ))}
+          </div>
         </div>
-        <div className="flex flex-col gap-16">
-          {TIERS.map((tier) => (
-            <TierBlock key={tier.id} tier={tier} />
-          ))}
-        </div>
-      </div>
+      ) : null}
     </Section>
   );
 }

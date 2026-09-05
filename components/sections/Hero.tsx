@@ -10,7 +10,6 @@ import { Counter } from "@/components/ui/counter";
 import { StatusDot } from "@/components/ui/status-dot";
 import { KeyCap } from "@/components/ui/key-cap";
 import { Panel } from "@/components/ui/panel";
-import { Badge } from "@/components/ui/badge";
 import { useUI } from "@/components/providers/lenis-provider";
 import { toggleCommandPalette } from "@/components/command-palette";
 import { HeroCharacter } from "@/components/hero-character";
@@ -56,6 +55,70 @@ function computeStats(days: ContribDay[]) {
     }
   }
   return { best, active };
+}
+
+/* ---------------------------------------------------------------------------
+   Tech marquee — the readme panel's stack row as an endless conveyor. Chips
+   drift left -> right forever, brighten on hover, and click through to each
+   technology's docs. The belt pauses while hovered so a chip can be caught.
+--------------------------------------------------------------------------- */
+
+const STACK: ReadonlyArray<{ label: string; href: string }> = [
+  { label: "typescript", href: "https://www.typescriptlang.org/docs/" },
+  { label: "node.js", href: "https://nodejs.org/en/docs" },
+  { label: "python", href: "https://docs.python.org/3/" },
+  { label: "postgres", href: "https://www.postgresql.org/docs/" },
+  { label: "docker", href: "https://docs.docker.com/" },
+  { label: "aws", href: "https://docs.aws.amazon.com/" },
+  { label: "react", href: "https://react.dev/" },
+  { label: "next.js", href: "https://nextjs.org/docs" },
+  { label: "tailwind css", href: "https://tailwindcss.com/docs" },
+  { label: "express", href: "https://expressjs.com/" },
+  { label: "redis", href: "https://redis.io/docs/" },
+  { label: "mongodb", href: "https://www.mongodb.com/docs/" },
+  { label: "nginx", href: "https://nginx.org/en/docs/" },
+  { label: "kubernetes", href: "https://kubernetes.io/docs/" },
+  { label: "github actions", href: "https://docs.github.com/actions" },
+  { label: "git", href: "https://git-scm.com/doc" },
+];
+
+function TechMarquee() {
+  const chips = (ariaHidden: boolean) => (
+    <div
+      aria-hidden={ariaHidden || undefined}
+      className="flex w-max shrink-0 items-center gap-2 pr-2"
+    >
+      {STACK.map((t) => (
+        <a
+          key={t.label}
+          href={t.href}
+          target="_blank"
+          rel="noopener noreferrer"
+          tabIndex={ariaHidden ? -1 : undefined}
+          className="inline-flex items-center whitespace-nowrap rounded-full border border-border px-3 py-1 font-mono text-xs tracking-tight text-muted-foreground transition-colors duration-200 hover:border-foreground/40 hover:text-foreground"
+        >
+          {t.label}
+        </a>
+      ))}
+    </div>
+  );
+
+  return (
+    <div
+      className="group/marquee mt-auto overflow-hidden pt-6"
+      style={{
+        maskImage:
+          "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)",
+        WebkitMaskImage:
+          "linear-gradient(to right, transparent, #000 8%, #000 92%, transparent)",
+      }}
+    >
+      <div className="flex w-max animate-[marquee-right_44s_linear_infinite] group-hover/marquee:[animation-play-state:paused] motion-reduce:animate-none">
+        {chips(false)}
+        {chips(true)}
+      </div>
+    </div>
+  );
 }
 
 function HeroCommitSignal() {
@@ -210,8 +273,9 @@ export default function Hero() {
   return (
     <Section id="hero" className="pt-28 pb-14 md:pt-32 md:pb-20">
       <div className="grid grid-cols-1 gap-10 sm:gap-12 lg:grid-cols-[1.4fr_1fr] lg:items-center lg:gap-16">
-        {/* LEFT — identity + kinetic word + CTAs */}
-        <div className="flex flex-col">
+        {/* LEFT — identity + kinetic word + CTAs. Display type, not copy:
+            selection highlights fight the kinetic reveal, so it is disabled. */}
+        <div className="flex select-none flex-col">
           <motion.div
             initial={{ opacity: 0, y: rise(12) }}
             animate={{ opacity: 1, y: 0 }}
@@ -315,7 +379,10 @@ export default function Hero() {
           initial={{ opacity: 0, y: rise(12) }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
-          className="h-full"
+          // min-w-0: a grid item's min-width defaults to auto, so the marquee's
+          // ~2800px intrinsic track would otherwise blow the column out to full
+          // page width instead of being clipped inside the panel.
+          className="h-full min-w-0"
         >
           <Panel
             title="readme.md"
@@ -343,14 +410,7 @@ export default function Hero() {
               </p>
             </div>
 
-            <div className="mt-auto flex flex-wrap gap-2 pt-6">
-              <Badge>typescript</Badge>
-              <Badge>node.js</Badge>
-              <Badge>python</Badge>
-              <Badge>postgres</Badge>
-              <Badge>docker</Badge>
-              <Badge>aws</Badge>
-            </div>
+            <TechMarquee />
           </Panel>
         </motion.div>
 
@@ -358,7 +418,7 @@ export default function Hero() {
           initial={{ opacity: 0, y: rise(16) }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.6, ease: [0.16, 1, 0.3, 1] }}
-          className="h-full"
+          className="h-full min-w-0"
         >
           <HeroCommitSignal />
         </motion.div>

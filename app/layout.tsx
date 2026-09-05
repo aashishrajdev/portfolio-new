@@ -4,6 +4,7 @@ import "./globals.css";
 import { Toaster } from "sonner";
 import { Texture } from "@/components/texture";
 import { LenisProvider } from "@/components/providers/lenis-provider";
+import { Preloader } from "@/components/preloader";
 import { Navbar } from "@/components/navbar";
 import { Rail } from "@/components/rail";
 import { Footer } from "@/components/footer";
@@ -72,6 +73,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${nunito.variable} ${fredoka.variable} dark`}>
       <body className="overflow-x-hidden bg-background text-foreground antialiased font-sans">
+        <Preloader />
         <LenisProvider>
           {/* Ambient fixed texture (dotted grid + grain). */}
           <Texture />
