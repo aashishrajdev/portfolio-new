@@ -18,7 +18,7 @@ export function Texture() {
 
       {/* Fractal-noise grain overlay */}
       <svg
-        className="absolute inset-0 h-full w-full opacity-[0.03] mix-blend-soft-light"
+        className="grain absolute inset-0 h-full w-full opacity-[0.03] mix-blend-soft-light"
         xmlns="http://www.w3.org/2000/svg"
       >
         <filter id="texture-grain">

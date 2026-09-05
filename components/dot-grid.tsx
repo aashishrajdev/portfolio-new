@@ -33,6 +33,10 @@ const EASE = 0.16;
     Matches Tailwind's `md` breakpoint. */
 const MIN_WIDTH = 768;
 
+/** Padding around the dome's dirty rectangle, covering displaced dot extents
+    (lift + push + scaled radius) so a cleared region never clips a dot. */
+const DIRTY_PAD = 28;
+
 type Palette = { color: string; base: number; peak: number };
 
 function readPalette(): Palette {
@@ -79,14 +83,30 @@ export function DotGrid() {
       draw();
     }
 
-    function draw() {
-      ctx!.clearRect(0, 0, width, height);
+    /** Bounding box of the dome around the smoothed pointer, padded so every
+        displaced dot falls inside. Null when the grid is fully at rest. */
+    let prevDirty: { x0: number; y0: number; x1: number; y1: number } | null =
+      null;
 
+    /** Draw every grid dot whose centre falls inside [x0,x1]×[y0,y1].
+        Cost is O(region area / pitch²), not O(canvas area / pitch²) — the
+        interactive frame only ever touches the dome's neighbourhood. */
+    function drawRegion(x0: number, y0: number, x1: number, y1: number) {
       const { color, base, peak } = palette;
       const reachSq = REACH * REACH;
 
-      for (let y = PITCH / 2; y < height + PITCH; y += PITCH) {
-        for (let x = PITCH / 2; x < width + PITCH; x += PITCH) {
+      // Snap the region to the dot lattice (dots sit at PITCH/2 + k·PITCH).
+      const startY = Math.max(
+        PITCH / 2,
+        PITCH / 2 + Math.floor((y0 - PITCH / 2) / PITCH) * PITCH,
+      );
+      const startX = Math.max(
+        PITCH / 2,
+        PITCH / 2 + Math.floor((x0 - PITCH / 2) / PITCH) * PITCH,
+      );
+
+      for (let y = startY; y <= y1 && y < height + PITCH; y += PITCH) {
+        for (let x = startX; x <= x1 && x < width + PITCH; x += PITCH) {
           let alpha = base;
           let dx = 0;
           let dy = 0;
@@ -120,12 +140,46 @@ export function DotGrid() {
       }
     }
 
+    /** Full repaint — used on resize, theme change, and initial mount. */
+    function draw() {
+      ctx!.clearRect(0, 0, width, height);
+      drawRegion(0, 0, width, height);
+      prevDirty = null;
+    }
+
+    /** Interactive repaint: clear and redraw only the union of the previous
+        and current dome rectangles. Everything outside is untouched pixels. */
+    function drawInteractive() {
+      const r = REACH + DIRTY_PAD;
+      // Snap the rect outward to lattice midlines (k·PITCH): dots sit at
+      // PITCH/2 offsets, so no dot circle can straddle a midline — clearing
+      // on these boundaries can never shave a neighbour it will not redraw.
+      const cur = {
+        x0: Math.max(0, Math.floor((smoothX - r) / PITCH) * PITCH),
+        y0: Math.max(0, Math.floor((smoothY - r) / PITCH) * PITCH),
+        x1: Math.min(width, Math.ceil((smoothX + r) / PITCH) * PITCH),
+        y1: Math.min(height, Math.ceil((smoothY + r) / PITCH) * PITCH),
+      };
+      const u = prevDirty
+        ? {
+            x0: Math.min(prevDirty.x0, cur.x0),
+            y0: Math.min(prevDirty.y0, cur.y0),
+            x1: Math.max(prevDirty.x1, cur.x1),
+            y1: Math.max(prevDirty.y1, cur.y1),
+          }
+        : cur;
+
+      ctx!.clearRect(u.x0, u.y0, u.x1 - u.x0, u.y1 - u.y0);
+      drawRegion(u.x0, u.y0, u.x1, u.y1);
+      prevDirty = energy > 0.001 ? cur : null;
+    }
+
     function tick() {
       smoothX += (pointerX - smoothX) * EASE;
       smoothY += (pointerY - smoothY) * EASE;
       energy += (targetEnergy - energy) * EASE;
 
-      draw();
+      drawInteractive();
 
       const settled =
         targetEnergy === 0 &&
@@ -136,7 +190,8 @@ export function DotGrid() {
       if (settled) {
         energy = 0;
         running = false;
-        draw();
+        // One last regional pass restores the resting grid where the dome was.
+        drawInteractive();
         return;
       }
       frame = requestAnimationFrame(tick);

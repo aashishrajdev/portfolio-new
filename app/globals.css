@@ -225,6 +225,33 @@ html {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   Mobile paint budget.
+   backdrop-filter re-samples the page on every scroll frame; with Lenis
+   animating scroll, each frosted surface multiplies that cost. On touch and
+   narrow-viewport devices the glass is swapped for a near-opaque fill —
+   visually equivalent at these blur radii, and dramatically cheaper. The
+   grain overlay's full-screen soft-light blend is dropped for the same
+   reason; at 3% opacity its absence is imperceptible.
+--------------------------------------------------------------------------- */
+@media (pointer: coarse), (max-width: 768px) {
+  .frosted,
+  .panel,
+  .glass-btn {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .frosted,
+  .panel {
+    background-color: color-mix(in oklab, var(--surface) 97%, transparent);
+  }
+
+  .grain {
+    display: none;
+  }
+}
+
 /* Hide scrollbar but keep scrollability (e.g. the contribution heatmap). */
 .no-scrollbar {
   scrollbar-width: none; /* Firefox */
